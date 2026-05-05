@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ATU Environmental Science — Study Guides</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg2: #f5f4f0;
+    --bg3: #eeecea;
+    --text: #1a1a18;
+    --text2: #5a5a57;
+    --text3: #8a8a86;
+    --border: rgba(0,0,0,0.12);
+    --border2: rgba(0,0,0,0.22);
+    --r-md: 8px;
+    --r-lg: 12px;
+    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --mono: 'Courier New', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font); background: var(--bg2); color: var(--text); min-height: 100vh; }
+  
+  /* Top bar */
+  .top-bar { background: var(--bg); border-bottom: 0.5px solid var(--border); padding: 0 1.5rem; position: sticky; top: 0; z-index: 100; }
+  .top-bar-inner { max-width: 900px; margin: 0 auto; display: flex; align-items: center; gap: 1rem; height: 52px; flex-wrap: wrap; }
+  .site-title { font-size: 14px; font-weight: 500; color: var(--text); white-space: nowrap; }
+  .module-tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+  .module-tab { font-size: 12px; padding: 5px 12px; border-radius: 20px; border: 0.5px solid var(--border2); background: transparent; color: var(--text2); cursor: pointer; white-space: nowrap; transition: all 0.15s; }
+  .module-tab:hover { background: var(--bg2); }
+  .module-tab.active { background: var(--text); color: var(--bg); border-color: var(--text); }
+
+  /* Main layout */
+  .main { max-width: 900px; margin: 0 auto; padding: 1.5rem; }
+  .module { display: none; }
+  .module.active { display: block; }
+  .module-header { margin-bottom: 1.5rem; }
+  .module-header h1 { font-size: 20px; font-weight: 500; margin-bottom: 4px; }
+  .module-header p { font-size: 13px; color: var(--text2); }
+
+  /* Section nav */
+  .section-nav { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1.25rem; }
+  .sec-btn { font-size: 12px; padding: 5px 13px; border-radius: 20px; border: 0.5px solid var(--border2); background: var(--bg); color: var(--text2); cursor: pointer; transition: all 0.15s; }
+  .sec-btn:hover { background: var(--bg2); }
+  .sec-btn.active { background: var(--text); color: var(--bg); border-color: var(--text); }
+  .sec { display: none; }
+  .sec.active { display: block; }
+
+  /* Topic grid */
+  .topic-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(196px, 1fr)); gap: 8px; margin-bottom: 1rem; }
+  .topic-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--r-lg); padding: 0.9rem; cursor: pointer; transition: border-color 0.15s; }
+  .topic-card:hover { border-color: var(--border2); }
+  .topic-card.selected { border: 1.5px solid var(--text); }
+  .topic-tag { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 10px; display: inline-block; margin-bottom: 7px; letter-spacing: 0.02em; }
+  .topic-title { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 3px; line-height: 1.4; }
+  .topic-freq { font-size: 11px; color: var(--text3); }
+  .freq-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 3px; }
+  .freq-high { background: #c94f28; }
+  .freq-med { background: #d68e18; }
+  .freq-low { background: #5a8e1a; }
+
+  /* Detail panel */
+  .detail-panel { background: var(--bg2); border-radius: var(--r-lg); padding: 1.1rem 1.25rem; margin-top: 4px; border: 0.5px solid var(--border); display: none; }
+  .detail-panel.open { display: block; }
+  .detail-panel h3 { font-size: 15px; font-weight: 500; margin-bottom: 0.7rem; }
+  .kp { display: flex; gap: 9px; margin-bottom: 7px; align-items: flex-start; }
+  .kp-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--text3); margin-top: 7px; flex-shrink: 0; }
+  .kp p { font-size: 13px; line-height: 1.65; }
+  .kp strong { font-weight: 500; }
+  .code-box { background: var(--bg); border: 0.5px solid var(--border2); border-radius: var(--r-md); padding: 9px 13px; margin: 8px 0; font-family: var(--mono); font-size: 12px; color: var(--text); line-height: 1.5; }
+  .leg-box { background: var(--bg); border-left: 3px solid #3d80c4; border-radius: 0 var(--r-md) var(--r-md) 0; padding: 8px 12px; margin: 8px 0; font-size: 13px; color: var(--text); line-height: 1.5; }
+  .flow-row { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; margin: 8px 0; }
+  .flow-box { background: var(--bg); border: 0.5px solid var(--border2); border-radius: var(--r-md); padding: 5px 9px; font-size: 11px; font-weight: 500; }
+  .flow-arrow { color: var(--text3); font-size: 12px; }
+
+  /* Questions */
+  .q-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--r-lg); padding: 0.9rem; margin-bottom: 8px; }
+  .q-meta { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 7px; align-items: center; }
+  .q-badge { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 10px; }
+  .q-text { font-size: 13px; line-height: 1.6; }
+  .q-marks { font-size: 11px; color: var(--text3); margin-top: 5px; }
+  .q-section-label { font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.06em; margin: 14px 0 6px; padding-top: 10px; border-top: 0.5px solid var(--border); }
+  .q-section-label:first-child { margin-top: 0; border-top: none; padding-top: 0; }
+
+  /* Flashcards */
+  .flash-wrap { }
+  .progress-bar { background: var(--bg3); border-radius: 4px; height: 3px; margin-bottom: 1rem; }
+  .progress-fill { height: 3px; border-radius: 4px; background: var(--text); transition: width 0.3s; }
+  .flash-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--r-lg); padding: 2rem 1.5rem; min-height: 150px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; cursor: pointer; margin-bottom: 0.75rem; transition: background 0.2s; }
+  .flash-card.flipped { background: var(--bg2); }
+  .flash-q { font-size: 15px; font-weight: 500; line-height: 1.5; }
+  .flash-a { font-size: 13px; color: var(--text2); line-height: 1.65; display: none; }
+  .flash-card.flipped .flash-q { display: none; }
+  .flash-card.flipped .flash-a { display: block; }
+  .flash-hint { font-size: 11px; color: var(--text3); margin-top: 10px; }
+  .flash-nav { display: flex; gap: 8px; justify-content: center; align-items: center; }
+  .flash-nav button { font-size: 13px; padding: 6px 18px; border: 0.5px solid var(--border2); background: var(--bg); border-radius: var(--r-md); cursor: pointer; }
+  .flash-nav button:hover { background: var(--bg2); }
+  .flash-counter { font-size: 13px; color: var(--text2); min-width: 50px; text-align: center; }
+
+  /* Tips */
+  .tips-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; }
+  .tip-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--r-lg); padding: 0.9rem; }
+  .tip-card h4 { font-size: 13px; font-weight: 500; margin-bottom: 6px; }
+  .tip-card p { font-size: 12px; color: var(--text2); line-height: 1.6; }
+
+  /* Legislation cards */
+  .leg-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 8px; }
+  .leg-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--r-lg); padding: 0.9rem; }
+  .leg-card-title { font-size: 13px; font-weight: 500; margin-bottom: 5px; }
+  .leg-card p { font-size: 12px; color: var(--text2); line-height: 1.6; }
+
+  /* Calculator */
+  .calc-box { background: var(--bg2); border-radius: var(--r-lg); padding: 1.1rem; margin-bottom: 1rem; }
+  .calc-layer { display: flex; gap: 8px; align-items: center; margin-bottom: 6px; flex-wrap: wrap; }
+  .calc-layer label { font-size: 12px; color: var(--text2); width: 55px; flex-shrink: 0; }
+  .calc-layer input { border: 0.5px solid var(--border2); border-radius: var(--r-md); padding: 5px 8px; font-size: 12px; width: 80px; background: var(--bg); color: var(--text); }
+  .calc-layer span { font-size: 12px; color: var(--text2); }
+  .calc-result-label { font-size: 12px; color: var(--text2); margin-top: 12px; }
+  .calc-result { font-size: 22px; font-weight: 500; margin: 4px 0 2px; }
+  .calc-note { font-size: 12px; color: var(--text2); }
+  .lambda-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 6px; margin-top: 0.75rem; }
+  .lambda-chip { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--r-md); padding: 6px 10px; font-size: 12px; color: var(--text2); }
+  .lambda-chip strong { color: var(--text); font-weight: 500; }
+  .calc-btns { display: flex; gap: 6px; margin-top: 8px; }
+  .calc-btns button { font-size: 12px; padding: 5px 12px; border: 0.5px solid var(--border2); background: var(--bg); border-radius: var(--r-md); cursor: pointer; }
+  .calc-btns button:hover { background: var(--bg2); }
+
+  /* Tag colour presets */
+  .t-eia { background:#eeedfb; color:#3a3280; }
+  .t-plan { background:#dff4eb; color:#075038; }
+  .t-env { background:#dceef9; color:#0b3f72; }
+  .t-post { background:#faebd8; color:#5e3205; }
+  .t-therm { background:#faebd8; color:#5e3205; }
+  .t-audit { background:#eeedfb; color:#3a3280; }
+  .t-build { background:#dff4eb; color:#075038; }
+  .t-mgmt { background:#dceef9; color:#0b3f72; }
+  .t-dom { background:#faebd8; color:#5e3205; }
+  .t-urb { background:#eeedfb; color:#3a3280; }
+  .t-slu { background:#dff4eb; color:#075038; }
+  .t-drk { background:#dceef9; color:#0b3f72; }
+  .b-jan { background:#dff4eb; color:#075038; }
+  .b-aug { background:#faebd8; color:#5e3205; }
+  .b-2223 { background:#eeedfb; color:#3a3280; }
+  .b-2324 { background:#dceef9; color:#0b3f72; }
+  .b-2425 { background:#fce8e8; color:#7a1e1e; }
+  .b-comp { background:#fce8e8; color:#7a1e1e; }
+  .b-jun { background:#dff4eb; color:#075038; }
+  .l-dom { border-left: 3px solid #d68e18; }
+  .l-urb { border-left: 3px solid #7f77dd; }
+  .l-slu { border-left: 3px solid #1d9e75; }
+  .l-drk { border-left: 3px solid #378add; }
+
+  @media (max-width: 600px) {
+    .main { padding: 1rem; }
+    .top-bar-inner { height: auto; padding: 10px 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="top-bar-inner">
+    <span class="site-title">ATU Study Guides</span>
+    <div class="module-tabs">
+      <button class="module-tab active" onclick="switchModule('eia',this)">EIA &amp; Planning</button>
+      <button class="module-tab" onclick="switchModule('energy',this)">Energy &amp; Sustainability</button>
+      <button class="module-tab" onclick="switchModule('water',this)">Water &amp; Wastewater</button>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- ═══════════════════════════════════════════════════════ MODULE 1: EIA -->
+<div id="mod-eia" class="module active">
+  <div class="module-header">
+    <h1>ENVR07056 — EIA and Planning</h1>
+    <p>Based on 4 exam papers: June 22/23, August 22/23, June 23/24, August 23/24</p>
+  </div>
+  <div class="section-nav">
+    <button class="sec-btn active" onclick="switchSec('eia','topics',this)">Topics</button>
+    <button class="sec-btn" onclick="switchSec('eia','questions',this)">Past questions</button>
+    <button class="sec-btn" onclick="switchSec('eia','flashcards',this)">Flashcards</button>
+    <button class="sec-btn" onclick="switchSec('eia','tips',this)">Exam tips</button>
+  </div>
+
+  <div id="eia-topics" class="sec active">
+    <p style="font-size:12px;color:#5a5a57;margin-bottom:0.9rem;">Click any topic to expand notes. Frequency shows appearances across all 4 papers.</p>
+    <div class="topic-grid" id="eia-topic-grid"></div>
+    <div id="eia-detail"></div>
+  </div>
+
+  <div id="eia-questions" class="sec">
+    <div id="eia-qlist"></div>
+  </div>
+
+  <div id="eia-flashcards" class="sec">
+    <p style="font-size:12px;color:#5a5a57;margin-bottom:0.9rem;">Click the card to reveal the answer.</p>
+    <div class="progress-bar"><div class="progress-fill" id="eia-prog" style="width:10%"></div></div>
+    <div class="flash-card" id="eia-fc" onclick="flip('eia')">
+      <div class="flash-q" id="eia-fq"></div>
+      <div class="flash-a" id="eia-fa"></div>
+      <div class="flash-hint" id="eia-fh">Tap to reveal answer</div>
+    </div>
+    <div class="flash-nav">
+      <button onclick="prevCard('eia')">← Prev</button>
+      <span class="flash-counter" id="eia-fc-count">1 / 10</span>
+      <button onclick="nextCard('eia')">Next →</button>
+    </div>
+  </div>
+
+  <div id="eia-tips" class="sec">
+    <div class="tips-grid" id="eia-tips-grid"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ MODULE 2: ENERGY -->
+<div id="mod-energy" class="module">
+  <div class="module-header">
+    <h1>ENVR07036 — Energy and Sustainability</h1>
+    <p>Based on 4 exam papers: June 22/23, August 22/23, June 23/24, August 23/24</p>
+  </div>
+  <div class="section-nav">
+    <button class="sec-btn active" onclick="switchSec('energy','topics',this)">Topics</button>
+    <button class="sec-btn" onclick="switchSec('energy','questions',this)">Past questions</button>
+    <button class="sec-btn" onclick="switchSec('energy','calculator',this)">U-value calculator</button>
+    <button class="sec-btn" onclick="switchSec('energy','flashcards',this)">Flashcards</button>
+    <button class="sec-btn" onclick="switchSec('energy','tips',this)">Exam tips</button>
+  </div>
+
+  <div id="energy-topics" class="sec active">
+    <p style="font-size:12px;color:#5a5a57;margin-bottom:0.9rem;">Click any topic to expand notes.</p>
+    <div class="topic-grid" id="energy-topic-grid"></div>
+    <div id="energy-detail"></div>
+  </div>
+  <div id="energy-questions" class="sec"><div id="energy-qlist"></div></div>
+  <div id="energy-calculator" class="sec">
+    <p style="font-size:12px;color:#5a5a57;margin-bottom:0.9rem;">Calculate the U-value for a multi-layer building element. Surface resistances (Rsi=0.13, Rso=0.04) are included automatically.</p>
+    <div class="calc-box">
+      <div style="font-size:13px;font-weight:500;margin-bottom:10px;">Layer details</div>
+      <div id="calc-layers"></div>
+      <div class="calc-btns">
+        <button onclick="addLayer()">+ Add layer</button>
+        <button onclick="removeLayer()">− Remove layer</button>
+      </div>
+      <div class="calc-result-label" style="margin-top:14px;">Combined U-value</div>
+      <div class="calc-result" id="calc-uval">—</div>
+      <div class="calc-note" id="calc-note"></div>
+    </div>
+    <div style="font-size:12px;color:#5a5a57;margin-bottom:0.5rem;font-weight:500;">Formula: U = 1 / (0.13 + Σ(d/λ) + 0.04) &nbsp;|&nbsp; d in metres</div>
+    <div style="font-size:13px;font-weight:500;margin:0.9rem 0 0.5rem;">Common λ values (W/mK)</div>
+    <div class="lambda-grid">
+      <div class="lambda-chip">Polyurethane: <strong>0.025</strong></div>
+      <div class="lambda-chip">Phenolic board: <strong>0.022</strong></div>
+      <div class="lambda-chip">Polystyrene EPS: <strong>0.038</strong></div>
+      <div class="lambda-chip">Bead insulation: <strong>0.022</strong></div>
+      <div class="lambda-chip">Plasterboard: <strong>0.18</strong></div>
+      <div class="lambda-chip">Concrete block: <strong>0.11–0.22</strong></div>
+      <div class="lambda-chip">Aerated block: <strong>0.095</strong></div>
+      <div class="lambda-chip">Slate on battens: <strong>0.22</strong></div>
+      <div class="lambda-chip">Sand/cement render: <strong>0.12</strong></div>
+    </div>
+  </div>
+  <div id="energy-flashcards" class="sec">
+    <p style="font-size:12px;color:#5a5a57;margin-bottom:0.9rem;">Click the card to reveal the answer.</p>
+    <div class="progress-bar"><div class="progress-fill" id="energy-prog" style="width:8%"></div></div>
+    <div class="flash-card" id="energy-fc" onclick="flip('energy')">
+      <div class="flash-q" id="energy-fq"></div>
+      <div class="flash-a" id="energy-fa"></div>
+      <div class="flash-hint" id="energy-fh">Tap to reveal answer</div>
+    </div>
+    <div class="flash-nav">
+      <button onclick="prevCard('energy')">← Prev</button>
+      <span class="flash-counter" id="energy-fc-count">1 / 12</span>
+      <button onclick="nextCard('energy')">Next →</button>
+    </div>
+  </div>
+  <div id="energy-tips" class="sec"><div class="tips-grid" id="energy-tips-grid"></div></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ MODULE 3: WATER -->
+<div id="mod-water" class="module">
+  <div class="module-header">
+    <h1>ENVR07042 — Water and Wastewater Treatment</h1>
+    <p>Based on 4 exam papers: January 23/24, August 23/24, January 24/25, August 24/25</p>
+  </div>
+  <div class="section-nav">
+    <button class="sec-btn active" onclick="switchSec('water','topics',this)">Topics</button>
+    <button class="sec-btn" onclick="switchSec('water','questions',this)">Past questions</button>
+    <button class="sec-btn" onclick="switchSec('water','legislation',this)">Key legislation</button>
+    <button class="sec-btn" onclick="switchSec('water','flashcards',this)">Flashcards</button>
+    <button class="sec-btn" onclick="switchSec('water','tips',this)">Exam tips</button>
+  </div>
+  <div id="water-topics" class="sec active">
+    <p style="font-size:12px;color:#5a5a57;margin-bottom:0.9rem;">Click any topic to expand notes.</p>
+    <div class="topic-grid" id="water-topic-grid"></div>
+    <div id="water-detail"></div>
+  </div>
+  <div id="water-questions" class="sec"><div id="water-qlist"></div></div>
+  <div id="water-legislation" class="sec"><div class="leg-grid" id="water-leg-grid"></div></div>
+  <div id="water-flashcards" class="sec">
+    <p style="font-size:12px;color:#5a5a57;margin-bottom:0.9rem;">Click the card to reveal the answer.</p>
+    <div class="progress-bar"><div class="progress-fill" id="water-prog" style="width:8%"></div></div>
+    <div class="flash-card" id="water-fc" onclick="flip('water')">
+      <div class="flash-q" id="water-fq"></div>
+      <div class="flash-a" id="water-fa"></div>
+      <div class="flash-hint" id="water-fh">Tap to reveal answer</div>
+    </div>
+    <div class="flash-nav">
+      <button onclick="prevCard('water')">← Prev</button>
+      <span class="flash-counter" id="water-fc-count">1 / 12</span>
+      <button onclick="nextCard('water')">Next →</button>
+    </div>
+  </div>
+  <div id="water-tips" class="sec"><div class="tips-grid" id="water-tips-grid"></div></div>
+</div>
+
+</div><!-- /main -->
+
+<script>
+// ─── UTILITIES ───────────────────────────────────────────────────────────────
+function switchModule(mod, btn) {
+  document.querySelectorAll('.module').forEach(m => m.classList.remove('active'));
+  document.querySelectorAll('.module-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('mod-' + mod).classList.add('active');
+  btn.classList.add('active');
+}
+
+function switchSec(mod, sec, btn) {
+  const prefix = mod + '-';
+  document.querySelectorAll('#mod-' + mod + ' .sec').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('#mod-' + mod + ' .sec-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(prefix + sec).classList.add('active');
+  btn.classList.add('active');
+}
+
+function toggleDetail(mod, id, card) {
+  const detailContainer = document.getElementById(mod + '-detail');
+  const existing = detailContainer.querySelector('.detail-panel.open');
+  const same = existing && existing.dataset.id === id;
+  detailContainer.innerHTML = '';
+  document.querySelectorAll('#' + mod + '-topic-grid .topic-card').forEach(c => c.classList.remove('selected'));
+  if (!same) {
+    const data = topicData[mod].find(t => t.id === id);
+    if (data) {
+      const panel = document.createElement('div');
+      panel.className = 'detail-panel open';
+      panel.dataset.id = id;
+      panel.innerHTML = '<h3>' + data.title + '</h3>' + data.content;
+      detailContainer.appendChild(panel);
+      card.classList.add('selected');
+    }
+  }
+}
+
+function badge(cls, text) {
+  return '<span class="q-badge ' + cls + '">' + text + '</span>';
+}
+
+function renderTopics(mod) {
+  const grid = document.getElementById(mod + '-topic-grid');
+  grid.innerHTML = '';
+  topicData[mod].forEach(t => {
+    const card = document.createElement('div');
+    card.className = 'topic-card';
+    card.id = 'tc-' + mod + '-' + t.id;
+    card.innerHTML = '<span class="topic-tag ' + t.tag + '">' + t.tagLabel + '</span>' +
+      '<div class="topic-title">' + t.title + '</div>' +
+      '<div class="topic-freq"><span class="freq-dot freq-' + t.freq + '"></span>' + t.freqLabel + '</div>';
+    card.onclick = () => toggleDetail(mod, t.id, card);
+    grid.appendChild(card);
+  });
+}
+
+function renderQuestions(mod) {
+  const el = document.getElementById(mod + '-qlist');
+  el.innerHTML = qData[mod];
+}
+
+function renderTips(mod) {
+  const el = document.getElementById(mod + '-tips-grid');
+  tipsData[mod].forEach(t => {
+    const card = document.createElement('div');
+    card.className = 'tip-card';
+    card.innerHTML = '<h4>' + t.h + '</h4><p>' + t.p + '</p>';
+    el.appendChild(card);
+  });
+}
+
+// ─── FLASHCARD ENGINE ─────────────────────────────────────────────────────────
+const fcState = { eia: 0, energy: 0, water: 0 };
+const fcFlipped = { eia: false, energy: false, water: false };
+
+function updateFlash(mod) {
+  const cards = flashData[mod];
+  const i = fcState[mod];
+  fcFlipped[mod] = false;
+  document.getElementById(mod + '-fc').classList.remove('flipped');
+  document.getElementById(mod + '-fq').textContent = cards[i].q;
+  document.getElementById(mod + '-fa').textContent = cards[i].a;
+  document.getElementById(mod + '-fc-count').textContent = (i + 1) + ' / ' + cards.length;
+  document.getElementById(mod + '-prog').style.width = Math.round(((i + 1) / cards.length) * 100) + '%';
+  document.getElementById(mod + '-fh').textContent = 'Tap to reveal answer';
+}
+
+function flip(mod) {
+  fcFlipped[mod] = !fcFlipped[mod];
+  document.getElementById(mod + '-fc').classList.toggle('flipped');
+  document.getElementById(mod + '-fh').textContent = fcFlipped[mod] ? 'Tap to flip back' : 'Tap to reveal answer';
+}
+
+function nextCard(mod) { fcState[mod] = (fcState[mod] + 1) % flashData[mod].length; updateFlash(mod); }
+function prevCard(mod) { fcState[mod] = (fcState[mod] - 1 + flashData[mod].length) % flashData[mod].length; updateFlash(mod); }
+
+// ─── U-VALUE CALCULATOR ───────────────────────────────────────────────────────
+let layerCount = 3;
+function renderCalcLayers() {
+  const c = document.getElementById('calc-layers');
+  c.innerHTML = '';
+  for (let i = 0; i < layerCount; i++) {
+    const row = document.createElement('div');
+    row.className = 'calc-layer';
+    row.innerHTML = '<label>Layer ' + (i+1) + '</label>' +
+      '<input type="number" id="cd' + i + '" placeholder="mm" min="0" step="1" oninput="calcU()">' +
+      '<span>mm &nbsp; λ =</span>' +
+      '<input type="number" id="cl' + i + '" placeholder="W/mK" min="0" step="0.001" oninput="calcU()">' +
+      '<span>W/mK</span>';
+    c.appendChild(row);
+  }
+  calcU();
+}
+function addLayer() { if (layerCount < 7) { layerCount++; renderCalcLayers(); } }
+function removeLayer() { if (layerCount > 1) { layerCount--; renderCalcLayers(); } }
+function calcU() {
+  let totalR = 0.17;
+  for (let i = 0; i < layerCount; i++) {
+    const d = parseFloat(document.getElementById('cd' + i)?.value);
+    const l = parseFloat(document.getElementById('cl' + i)?.value);
+    if (!isNaN(d) && !isNaN(l) && d > 0 && l > 0) totalR += (d / 1000) / l;
+  }
+  const u = 1 / totalR;
+  const res = document.getElementById('calc-uval');
+  const note = document.getElementById('calc-note');
+  if (totalR === 0.17) { res.textContent = '—'; note.textContent = ''; return; }
+  res.textContent = u.toFixed(3) + ' W/m²K';
+  if (u < 0.15) note.textContent = 'Excellent — exceeds Passive House standard';
+  else if (u < 0.21) note.textContent = 'Good — meets Irish Part L requirements (wall)';
+  else if (u < 0.35) note.textContent = 'Moderate — consider improving insulation';
+  else note.textContent = 'Poor — significant heat loss expected';
+}
+
+// ─── DATA ─────────────────────────────────────────────────────────────────────
+
+const topicData = {
+
+eia: [
+  { id:'t1', tag:'t-eia', tagLabel:'EIA Process', title:'EIA vs EIAR distinction', freq:'high', freqLabel:'High — 2 exams',
+    title:'EIA vs EIAR distinction',
+    content:'<div class="kp"><div class="kp-dot"></div><p><strong>EIA</strong> is the overall process — a series of procedural steps used to assess environmental effects of a proposed project before a decision is made.</p></div><div class="kp"><div class="kp-dot"></div><p><strong>EIAR</strong> (Environmental Impact Assessment Report) is the written document produced by the developer, containing all information required under the EIA Directive and Irish regulations.</p></div><div class="kp"><div class="kp-dot"></div><p>The EIA process includes: screening → scoping → baseline studies → impact prediction → mitigation → EIAR preparation → public consultation → competent authority decision → monitoring.</p></div><div class="kp"><div class="kp-dot"></div><p>The EIAR is one output within the broader EIA process — it is not the process itself.</p></div>'},
+  { id:'t2', tag:'t-eia', tagLabel:'EIA Process', title:'Screening & scoping', freq:'high', freqLabel:'High — 2 exams',
+    content:'<div class="kp"><div class="kp-dot"></div><p><strong>Screening</strong> determines whether a project requires an EIA at all. It checks project type (Annex I = mandatory; Annex II = case-by-case) and applies thresholds and criteria (scale, location, sensitivity of receiving environment).</p></div><div class="kp"><div class="kp-dot"></div><p><strong>Scoping</strong> determines what information must be included in the EIAR — which environmental topics to cover and at what level of detail.</p></div><div class="kp"><div class="kp-dot"></div><p>Key difference: screening = in/out decision; scoping = content/depth decision. Both are separate, sequential stages before the EIAR is prepared.</p></div><div class="kp"><div class="kp-dot"></div><p>In Ireland, scoping is not mandatory but is strongly encouraged. The competent authority provides a scoping opinion if requested.</p></div>'},
+  { id:'t3', tag:'t-eia', tagLabel:'EIAR Content', title:'Project description (EPA Guidelines)', freq:'high', freqLabel:'High — 3 exams',
+    content:'<div class="kp"><div class="kp-dot"></div><p>Must describe the physical characteristics of the whole project, including land use requirements during construction and operational phases.</p></div><div class="kp"><div class="kp-dot"></div><p>Must include production processes, nature and quantity of materials used, and estimates of expected residues and emissions (water, air, soil, noise, vibration, light, heat, radiation).</p></div><div class="kp"><div class="kp-dot"></div><p>Should describe the location — maps at appropriate scales, sensitive areas nearby, and existing land uses.</p></div><div class="kp"><div class="kp-dot"></div><p>Must cover all phases: construction, operation, and decommissioning where relevant.</p></div>'},
+  { id:'t4', tag:'t-eia', tagLabel:'EIAR Content', title:'Alternatives in EIAR', freq:'high', freqLabel:'High — 3 exams',
+    content:'<div class="kp"><div class="kp-dot"></div><p>The EIA Directive requires a description of reasonable alternatives studied by the developer, including the preferred option and main reasons for its selection on environmental grounds.</p></div><div class="kp"><div class="kp-dot"></div><p>Types: <strong>site alternatives</strong> (different locations), <strong>design alternatives</strong> (different layouts), <strong>process alternatives</strong> (different technologies), <strong>scale alternatives</strong>, and the <strong>"do nothing" option</strong>.</p></div><div class="kp"><div class="kp-dot"></div><p>Each alternative must be compared in terms of environmental effects — not just the selected option.</p></div><div class="kp"><div class="kp-dot"></div><p>Only alternatives that are genuinely reasonable and relevant need be considered.</p></div>'},
+  { id:'t5', tag:'t-eia', tagLabel:'EIAR Content', title:'Environmental factors — Article 3', freq:'med', freqLabel:'Medium — 1 exam',
+    content:'<div class="kp"><div class="kp-dot"></div><p>Population & human health; biodiversity (flora, fauna, habitats); land, soil & geology; water; air; climate; material assets; cultural heritage; and interaction effects between all of the above.</p></div><div class="kp"><div class="kp-dot"></div><p>Both direct and indirect significant effects must be assessed on all factors.</p></div><div class="kp"><div class="kp-dot"></div><p>Cumulative, transboundary, and in-combination effects must also be considered.</p></div>'},
+  { id:'t6', tag:'t-eia', tagLabel:'EIAR Content', title:'Fundamental principles of EIAR', freq:'med', freqLabel:'Medium — 1 exam',
+    content:'<div class="kp"><div class="kp-dot"></div><p>Objectivity, proportionality, transparency, competence, non-technical summary, and worst-case scenario approach where uncertainty exists.</p></div><div class="kp"><div class="kp-dot"></div><p>The non-technical summary must be included so the public can understand the findings.</p></div><div class="kp"><div class="kp-dot"></div><p>Preparation must be by qualified experts with relevant experience.</p></div>'},
+  { id:'t7', tag:'t-eia', tagLabel:'Stakeholders', title:'EIA stakeholder roles', freq:'high', freqLabel:'High — 2 exams',
+    content:'<div class="kp"><div class="kp-dot"></div><p><strong>Developer/applicant</strong> — commissions and funds the EIAR; responsible for its accuracy; must consult pre-application.</p></div><div class="kp"><div class="kp-dot"></div><p><strong>Competent authority</strong> — typically the planning authority or An Bord Pleanála; grants or refuses consent; ensures EIA process is followed.</p></div><div class="kp"><div class="kp-dot"></div><p><strong>Statutory consultees</strong> — EPA, NPWS, Irish Water, Transport Infrastructure Ireland, Heritage Council.</p></div><div class="kp"><div class="kp-dot"></div><p><strong>The public</strong> — right to inspect and make submissions on the EIAR.</p></div><div class="kp"><div class="kp-dot"></div><p><strong>EIA consultants/team</strong> — prepare the EIAR; specialists in ecology, hydrology, noise, air quality etc.</p></div>'},
+  { id:'t8', tag:'t-plan', tagLabel:'Planning', title:'Planning application documentation', freq:'high', freqLabel:'High — 3 exams',
+    content:'<div class="kp"><div class="kp-dot"></div><p>Completed application form; site location map (1:1000 or 1:2500); site layout plan (existing and proposed); architectural drawings (floor plans, elevations, sections); correct planning fee; evidence of public notice (newspaper and site notice).</p></div><div class="kp"><div class="kp-dot"></div><p>For EIA projects: EIAR and any required Natura Impact Statement (NIS) for Appropriate Assessment.</p></div>'},
+  { id:'t9', tag:'t-plan', tagLabel:'Planning', title:'Planning enforcement', freq:'high', freqLabel:'High — 3 exams',
+    content:'<div class="kp"><div class="kp-dot"></div><p>Planning authorities have a duty to investigate complaints about unauthorised development.</p></div><div class="kp"><div class="kp-dot"></div><p>Enforcement notices: Warning Letter → Enforcement Notice (requiring cessation or remediation) → prosecution. The planning authority can apply to the High Court for an injunction.</p></div><div class="kp"><div class="kp-dot"></div><p>Time limits: generally 7 years from commencement of unauthorised development.</p></div><div class="kp"><div class="kp-dot"></div><p><strong>Retention permission</strong> — a developer may apply to retain an unauthorised development. If refused, the development must be removed/remediated.</p></div>'},
+  { id:'t10', tag:'t-plan', tagLabel:'Planning', title:'Irish planning hierarchy', freq:'med', freqLabel:'Medium — 1 exam',
+    content:'<div class="kp"><div class="kp-dot"></div><p><strong>National Planning Framework (NPF)</strong> — Project Ireland 2040; Government level; 20-year strategic vision.</p></div><div class="kp"><div class="kp-dot"></div><p><strong>Regional Spatial and Economic Strategies (RSES)</strong> — prepared by Regional Assemblies.</p></div><div class="kp"><div class="kp-dot"></div><p><strong>County Development Plans</strong> — prepared by county/city councils every 6 years; sets land use zoning and policies.</p></div><div class="kp"><div class="kp-dot"></div><p><strong>Local Area Plans (LAPs)</strong> — for specific towns/villages; must be consistent with County Development Plan.</p></div>'},
+  { id:'t11', tag:'t-post', tagLabel:'Post-auth', title:'Implementation & monitoring', freq:'high', freqLabel:'High — 2 exams',
+    content:'<div class="kp"><div class="kp-dot"></div><p>The competent authority imposes conditions on the planning permission — specifying mitigation measures, monitoring requirements, reporting obligations, and compliance timescales.</p></div><div class="kp"><div class="kp-dot"></div><p>The developer is responsible for implementing all mitigation measures committed to in the EIAR and all consent conditions.</p></div><div class="kp"><div class="kp-dot"></div><p>An environmental monitoring programme should cover construction and operational phases.</p></div>'},
+  { id:'t12', tag:'t-post', tagLabel:'Post-auth', title:'CEMP & additional plans', freq:'med', freqLabel:'Medium — 1 exam',
+    content:'<div class="kp"><div class="kp-dot"></div><p>A <strong>CEMP</strong> sets out how environmental impacts will be managed during construction. Typically includes: dust/air quality, noise/vibration, water quality, waste management, soil/contamination controls, ecology protection, emergency response.</p></div><div class="kp"><div class="kp-dot"></div><p>Other plans that may be required: Traffic Management Plan, Landscape Management Plan, Ecological Management Plan, Flood Risk Management Plan, Waste Management Plan, Decommissioning Plan.</p></div>'},
+],
+
+energy: [
+  { id:'e1', tag:'t-therm', tagLabel:'Thermal physics', title:'Thermal conductivity (λ)', freq:'high', freqLabel:'High — all 4 exams',
+    content:'<div class="kp"><div class="kp-dot"></div><p>λ (lambda) measures a material\'s ability to conduct heat. Units: W/mK. Low λ = good insulator; high λ = good conductor.</p></div><div class="kp"><div class="kp-dot"></div><p>Important because it determines heat flow through building elements — critical for calculating U-values.</p></div><div class="code-box">Thermal resistance R = thickness (m) / λ (W/mK) → units: m²K/W</div><div class="kp"><div class="kp-dot"></div><p>Examples: polyurethane ≈ 0.025 W/mK (excellent); concrete ≈ 0.5–2.0 W/mK (poor insulator).</p></div>'},
+  { id:'e2', tag:'t-therm', tagLabel:'Thermal physics', title:'U-values & insulation', freq:'high', freqLabel:'High — all 4 exams',
+    content:'<div class="kp"><div class="kp-dot"></div><p>U-value = overall thermal transmittance. Units: W/m²K. <strong>Lower U-value = better insulation</strong> (True/False question — always TRUE).</p></div><div class="code-box">U = 1 / (Rsi + R1 + R2 + ... + Rso)<br>Rsi = 0.13, Rso = 0.04 (standard surface resistances)<br>R = d/λ for each layer (d in metres)</div><div class="kp"><div class="kp-dot"></div><p>Irish Building Regulations Part L sets maximum U-value requirements for walls, roofs, floors and windows.</p></div>'},
+  { id:'e3', tag:'t-therm', tagLabel:'Thermal physics', title:'Emissivity & absorptivity', freq:'high', freqLabel:'High — 3 exams',
+    content:'<div class="kp"><div class="kp-dot"></div><p><strong>Emissivity</strong>: ability of a surface to emit radiant heat. Low-emissivity surfaces (e.g. foil-faced insulation, low-e glass) reflect heat back.</p></div><div class="kp"><div class="kp-dot"></div><p><strong>Absorptivity</strong>: ability to absorb radiant energy. Dark surfaces have high absorptivity.</p></div><div class="kp"><div class="kp-dot"></div><p>Both relate to radiant heat transfer — important for passive solar design and glazing specification.</p></div>'},
+  { id:'e4', tag:'t-therm', tagLabel:'Thermal physics', title:'Degree days', freq:'med', freqLabel:'Medium — 2 exams',
+    content:'<div class="kp"><div class="kp-dot"></div><p>Degree days measure the cumulative temperature difference below a base temperature (usually 15.5°C in Ireland) over a time period.</p></div><div class="kp"><div class="kp-dot"></div><p>Used to normalise energy consumption — plotting fuel use vs degree days reveals whether consumption is proportional to weather or indicates a system problem.</p></div><div class="kp"><div class="kp-dot"></div><p>Deviations above the regression line indicate wasted energy.</p></div>'},
+  { id:'e5', tag:'t-therm', tagLabel:'Thermal physics', title:'Heat transfer modes', freq:'low', freqLabel:'Low — 1 exam',
+    content:'<div class="kp"><div class="kp-dot"></div><p><strong>Conduction</strong> — through a solid by molecular vibration. Rate depends on λ and temperature gradient.</p></div><div class="kp"><div class="kp-dot"></div><p><strong>Convection</strong> — through fluid movement (air or liquid). Natural or forced.</p></div><div class="kp"><div class="kp-dot"></div><p><strong>Radiation</strong> — electromagnetic waves; no medium needed. All objects emit radiation based on temperature and emissivity.</p></div>'},
+  { id:'e6', tag:'t-build', tagLabel:'Buildings', title:'Site suitability & green design', freq:'high', freqLabel:'High — all 4 exams',
+    content:'<div class="kp"><div class="kp-dot"></div><p><strong>Avoid exposure and prominence</strong>: sheltered sites reduce wind-driven heat loss — lower heating demand, reduced rain penetration, improved thermal comfort.</p></div><div class="kp"><div class="kp-dot"></div><p><strong>Orientation</strong>: south-facing principal rooms maximise passive solar gain.</p></div><div class="kp"><div class="kp-dot"></div><p><strong>Landscaping</strong>: deciduous trees on south side for summer shade; evergreen on north/west for windbreaks.</p></div><div class="kp"><div class="kp-dot"></div><p><strong>Building form</strong>: compact shapes (low surface-area-to-volume ratio) reduce heat loss.</p></div><div class="kp"><div class="kp-dot"></div><p><strong>Legislation</strong>: Building Regulations Part L; SEAI NZEB standards; BER system; Passive House standard.</p></div>'},
+  { id:'e7', tag:'t-build', tagLabel:'Buildings', title:'Insulation product properties', freq:'high', freqLabel:'High — 3 exams',
+    content:'<div class="kp"><div class="kp-dot"></div><p>Beyond thermal performance (low λ), a good insulation product should also be: durable and dimensionally stable; moisture resistant; non-combustible or fire retardant; non-toxic and safe to handle; structurally sound; environmentally sustainable; cost-effective; vermin resistant.</p></div>'},
+  { id:'e8', tag:'t-build', tagLabel:'Buildings', title:'Urban heat island effect', freq:'high', freqLabel:'High — all 4 exams',
+    content:'<div class="kp"><div class="kp-dot"></div><p>Cities are typically 2–5°C warmer than surrounding rural areas due to heat-absorbing surfaces, reduced vegetation, and waste heat from vehicles, industry, and buildings.</p></div><div class="kp"><div class="kp-dot"></div><p>Reduction measures: green roofs and walls, urban tree planting, high-albedo (light-coloured) road/roof surfaces, urban parks and water features, cool pavements.</p></div>'},
+  { id:'e9', tag:'t-build', tagLabel:'Buildings', title:'Driving rain index', freq:'med', freqLabel:'Medium — 2 exams',
+    content:'<div class="kp"><div class="kp-dot"></div><p>Combines wind speed and rainfall to indicate rain driven against a building surface. Higher DRI = greater exposure and risk of water penetration.</p></div><div class="kp"><div class="kp-dot"></div><p>Highest DRI values in Ireland are on the west coast (Connacht and west Munster) due to prevailing south-westerly Atlantic winds.</p></div>'},
+  { id:'e10', tag:'t-build', tagLabel:'Buildings', title:'Building life cycle & embodied energy', freq:'med', freqLabel:'Medium — 2 exams',
+    content:'<div class="kp"><div class="kp-dot"></div><p>Six phases: (1) raw material extraction, (2) material manufacture, (3) construction, (4) operation & maintenance, (5) renovation, (6) demolition & disposal.</p></div><div class="kp"><div class="kp-dot"></div><p>High embodied energy materials: steel, aluminium, concrete, glass. Low embodied energy: sustainably sourced timber, straw bale, recycled materials.</p></div>'},
+  { id:'e11', tag:'t-audit', tagLabel:'Energy audit', title:'Audit process (pre/during/post)', freq:'high', freqLabel:'High — all 4 exams',
+    content:'<div class="kp"><div class="kp-dot"></div><p><strong>Pre-visit:</strong> agree scope; gather energy bills (2–3 years); review facility drawings; prepare data request forms; arrange site access and H&S; brief audit team.</p></div><div class="kp"><div class="kp-dot"></div><p><strong>Site visit:</strong> walk-through survey; inspect building fabric and systems (heating, ventilation, lighting); read all meters; interview staff; identify energy waste; photograph and measure.</p></div><div class="kp"><div class="kp-dot"></div><p><strong>Post-visit:</strong> analyse data; calculate consumption by end-use; benchmark; identify and prioritise ECMs with payback periods; prepare and present audit report.</p></div>'},
+  { id:'e12', tag:'t-audit', tagLabel:'Energy audit', title:'Audit levels II vs III', freq:'med', freqLabel:'Medium — 2 exams',
+    content:'<div class="kp"><div class="kp-dot"></div><p><strong>Level II</strong>: detailed survey — analyses bills, measures systems, identifies ECMs with initial cost-benefit analysis. Suitable for most commercial/industrial buildings.</p></div><div class="kp"><div class="kp-dot"></div><p><strong>Level III</strong>: investment-grade — detailed monitoring, energy modelling, precise financial analysis. Required before major capital investment in energy efficiency.</p></div>'},
+  { id:'e13', tag:'t-audit', tagLabel:'Energy audit', title:'Audit report structure', freq:'high', freqLabel:'High — 3 exams',
+    content:'<div class="kp"><div class="kp-dot"></div><p>Typical headings: (1) Executive summary, (2) Introduction and scope, (3) Facility description, (4) Energy data analysis, (5) Benchmarking, (6) Site findings, (7) ECMs with costs/savings, (8) Prioritised action plan, (9) Conclusions, (10) Appendices.</p></div><div class="kp"><div class="kp-dot"></div><p>Executive summary targets senior management (non-technical); technical sections for facilities/energy managers. Must serve both audiences.</p></div>'},
+  { id:'e14', tag:'t-mgmt', tagLabel:'Energy mgmt', title:'Energy data collection & assessment', freq:'high', freqLabel:'High — all 4 exams',
+    content:'<div class="kp"><div class="kp-dot"></div><p><strong>Data sources:</strong> utility bills, sub-meter readings, BMS/SCADA data, fuel delivery records, production output data, degree day data, occupancy records.</p></div><div class="kp"><div class="kp-dot"></div><p><strong>Assessment methods:</strong> consumption trending; regression analysis vs degree days or production; energy intensity metrics (kWh/m², kWh/unit); benchmarking; Sankey diagrams; specific energy consumption (SEC).</p></div>'},
+  { id:'e15', tag:'t-mgmt', tagLabel:'Energy mgmt', title:'Action plans & ISO 50001', freq:'med', freqLabel:'Medium — 2 exams',
+    content:'<div class="kp"><div class="kp-dot"></div><p><strong>ISO 50001</strong> is the international Energy Management System standard. It follows the Plan-Do-Check-Act (PDCA) cycle. An energy audit is a key input.</p></div><div class="kp"><div class="kp-dot"></div><p>An action plan includes: prioritised ECMs; responsible person; target dates; estimated savings; capital cost and payback; KPIs to monitor progress.</p></div><div class="kp"><div class="kp-dot"></div><p>ECMs range from no-cost (controls optimisation) to high-cost capital (new boiler, renewables, envelope retrofit).</p></div>'},
+  { id:'e16', tag:'t-mgmt', tagLabel:'Energy mgmt', title:'Electricity bills & metering', freq:'high', freqLabel:'High — 3 exams',
+    content:'<div class="kp"><div class="kp-dot"></div><p>Key information beyond total cost: meter readings, units consumed (kWh), tariff rates (day/night/peak), standing charge, billing period, Maximum Import Capacity/demand charge, VAT, PSO levy, carbon tax.</p></div><div class="kp"><div class="kp-dot"></div><p>Maximum demand charges can be significant for industrial users — reducing peak demand through load management or power factor correction reduces these.</p></div><div class="kp"><div class="kp-dot"></div><p>Solar panels in Ireland: optimum orientation is south-facing, tilt ~30–35° from horizontal.</p></div>'},
+],
+
+water: [
+  { id:'w1', tag:'t-dom', tagLabel:'Domestic WWT', title:'Septic tank system — purpose & operation', freq:'high', freqLabel:'High — all 4 exams',
+    content:'<div class="kp"><div class="kp-dot"></div><p>A septic tank provides primary treatment — solids settle to form sludge; grease floats; clarified effluent passes to the percolation bed for secondary treatment.</p></div><div class="kp"><div class="kp-dot"></div><p>The percolation bed provides secondary treatment — effluent percolates through soil, which physically filters and biologically treats it.</p></div><div class="kp"><div class="kp-dot"></div><p>The most common cause of malfunction in Ireland is failure to desludge regularly — sludge overflows into the percolation bed and blocks it. Resolution: regular desludging every 1–3 years.</p></div>'},
+  { id:'w2', tag:'t-dom', tagLabel:'Domestic WWT', title:'Percolation test (T-value)', freq:'high', freqLabel:'High — all 4 exams',
+    content:'<div class="kp"><div class="kp-dot"></div><p>Purpose: to assess whether soil at a site has adequate permeability to accept and treat effluent without causing environmental or public health problems.</p></div><div class="kp"><div class="kp-dot"></div><p>Method: test hole dug to proposed depth; filled and drained (pre-soaking); water added to set level and time recorded for water to fall 25mm — this is the T-value.</p></div><div class="kp"><div class="kp-dot"></div><p>Acceptable range: T = 3 to 50 minutes. T &lt;3 = too permeable (insufficient treatment). T &gt;50 = too impermeable (waterlogging, surface ponding).</p></div><div class="kp"><div class="kp-dot"></div><p>Trial pit inspection also required — minimum 1m unsaturated zone above seasonal high water table.</p></div>'},
+  { id:'w3', tag:'t-dom', tagLabel:'Domestic WWT', title:'Groundwater vulnerability & site characteristics', freq:'high', freqLabel:'High — 3 exams',
+    content:'<div class="kp"><div class="kp-dot"></div><p>Shallow depth to bedrock; karst/fissured limestone; high permeability soils (gravels, sands); high seasonal water table; proximity to surface water or drinking water wells.</p></div><div class="kp"><div class="kp-dot"></div><p>Key constituents in domestic wastewater posing a threat: pathogens (bacteria, viruses, protozoa), nutrients (nitrates, phosphates), BOD/organic matter, suspended solids.</p></div>'},
+  { id:'w4', tag:'t-dom', tagLabel:'Domestic WWT', title:'Alternative & packaged systems', freq:'med', freqLabel:'Medium — 2 exams',
+    content:'<div class="kp"><div class="kp-dot"></div><p>Used when site conditions are unsuitable (T-value outside 3–50, high water table, shallow bedrock).</p></div><div class="kp"><div class="kp-dot"></div><p>A packaged system provides biological secondary treatment in a compact, pre-manufactured unit. Examples: aerobic treatment units (ATUs), rotating biological contactors (RBCs), sequencing batch reactors (SBRs).</p></div>'},
+  { id:'w5', tag:'t-dom', tagLabel:'Domestic WWT', title:'Legislation & inspection', freq:'high', freqLabel:'High — 3 exams',
+    content:'<div class="leg-box">Water Services (Amendment) Act 2012 — requires registration and inspection of domestic septic tank systems in Ireland.</div><div class="leg-box">National Inspection Plan (2022–2026) — sets out the programme of inspections, prioritising high-risk areas near drinking water sources and in karst geology regions.</div>'},
+  { id:'w6', tag:'t-urb', tagLabel:'Urban WWT', title:'Preliminary & primary treatment', freq:'high', freqLabel:'High — 3 exams',
+    content:'<div class="kp"><div class="kp-dot"></div><p><strong>Preliminary treatment:</strong> screening (bar/fine screens remove rags, plastics, debris), grit removal, grease separation.</p></div><div class="kp"><div class="kp-dot"></div><p><strong>Primary treatment:</strong> gravity settlement in primary clarifiers removes settleable solids and associated BOD (~50–70% SS, ~30% BOD). Settled solids = primary sludge.</p></div><div class="flow-row"><div class="flow-box">Screening</div><div class="flow-arrow">→</div><div class="flow-box">Grit removal</div><div class="flow-arrow">→</div><div class="flow-box">Primary settlement</div><div class="flow-arrow">→</div><div class="flow-box">Secondary</div></div>'},
+  { id:'w7', tag:'t-urb', tagLabel:'Urban WWT', title:'Secondary treatment — activated sludge', freq:'high', freqLabel:'High — 3 exams',
+    content:'<div class="kp"><div class="kp-dot"></div><p>A mixed community of microorganisms in an aerated reaction tank biologically degrades dissolved organics (BOD). Oxygen supplied by aerators.</p></div><div class="kp"><div class="kp-dot"></div><p>Mixed liquor flows to secondary clarifier; settled sludge partly returned (RAS); excess removed (WAS).</p></div><div class="kp"><div class="kp-dot"></div><p>Foaming can be caused by surfactants/detergents or filamentous bacteria (Nocardia, Microthrix). Control: water sprays, anti-foam agents, chlorination of return sludge.</p></div><div class="kp"><div class="kp-dot"></div><p>Biological nitrogen removal: nitrification (aerobic — ammonia → nitrate) + denitrification (anoxic — nitrate → N₂ gas).</p></div>'},
+  { id:'w8', tag:'t-urb', tagLabel:'Urban WWT', title:'Secondary treatment — trickling filters', freq:'high', freqLabel:'High — 3 exams',
+    content:'<div class="kp"><div class="kp-dot"></div><p>A bed of media (rock or plastic) with a biofilm of microorganisms. Wastewater distributed over the surface by rotating arms; biofilm aerobically degrades organic matter as wastewater trickles through.</p></div><div class="kp"><div class="kp-dot"></div><p>Periodically biofilm detaches (sloughing); solids settled in a humus tank.</p></div><div class="kp"><div class="kp-dot"></div><p>Disadvantages: psychoda fly infestation; odour problems; less flexible than activated sludge; media blockage; performance affected by cold weather.</p></div>'},
+  { id:'w9', tag:'t-urb', tagLabel:'Urban WWT', title:'Tertiary treatment — disinfection', freq:'high', freqLabel:'High — all 4 exams',
+    content:'<div class="kp"><div class="kp-dot"></div><p><strong>Chlorination:</strong> most widely used. Pros: effective against most bacteria, residual protection, cost-effective. Cons: forms disinfection by-products (THMs); NOT effective against Cryptosporidium.</p></div><div class="kp"><div class="kp-dot"></div><p><strong>UV irradiation:</strong> damages DNA of microorganisms. Effective against Cryptosporidium. No chemical residuals or DBPs — key advantage. No residual disinfection protection after treatment.</p></div><div class="leg-box">EU Urban Wastewater Treatment Directive (91/271/EEC) — main EU regulation for urban wastewater treatment.</div>'},
+  { id:'w10', tag:'t-slu', tagLabel:'Sludge', title:'Sludge thickening', freq:'med', freqLabel:'Medium — 2 exams',
+    content:'<div class="kp"><div class="kp-dot"></div><p>Purpose: reduce sludge volume by increasing solids content, reducing costs and size of subsequent treatment.</p></div><div class="kp"><div class="kp-dot"></div><p><strong>Gravity thickening:</strong> solids settle in circular tank; thickened sludge withdrawn from base. Simple, low energy, effective for primary sludge.</p></div><div class="kp"><div class="kp-dot"></div><p><strong>Dissolved air flotation (DAF):</strong> air bubbles attach to sludge particles and float them to the surface. More effective for waste activated sludge.</p></div>'},
+  { id:'w11', tag:'t-slu', tagLabel:'Sludge', title:'Anaerobic digestion', freq:'high', freqLabel:'High — 3 exams',
+    content:'<div class="kp"><div class="kp-dot"></div><p>Biological breakdown of organic matter in absence of oxygen in a sealed, heated digester (~35°C mesophilic).</p></div><div class="kp"><div class="kp-dot"></div><p>Four stages: (1) <strong>Hydrolysis</strong> — complex organics → soluble compounds. (2) <strong>Acidogenesis</strong> → volatile fatty acids, CO₂, H₂. (3) <strong>Acetogenesis</strong> → acetic acid, CO₂, H₂. (4) <strong>Methanogenesis</strong> → methane + CO₂ produced by methanogenic archaea.</p></div><div class="kp"><div class="kp-dot"></div><p>Outputs: biogas (60–70% methane — used for heat/electricity via CHP); digestate (stabilised sludge for dewatering/land application).</p></div>'},
+  { id:'w12', tag:'t-slu', tagLabel:'Sludge', title:'Alkaline stabilisation', freq:'med', freqLabel:'Medium — 2 exams',
+    content:'<div class="kp"><div class="kp-dot"></div><p>Lime (CaO or Ca(OH)₂) added to sludge, raising pH to ≥12 for a minimum period — kills pathogens and inhibits further biological activity.</p></div><div class="kp"><div class="kp-dot"></div><p>Benefit: simple, low-cost, effective pathogen reduction.</p></div><div class="kp"><div class="kp-dot"></div><p>Disadvantage: does not reduce volume; significant lime cost; pH may eventually drop causing re-activation and odours; increases sludge mass.</p></div>'},
+  { id:'w13', tag:'t-slu', tagLabel:'Sludge', title:'Composting & thermal drying', freq:'med', freqLabel:'Medium — 2 exams',
+    content:'<div class="kp"><div class="kp-dot"></div><p><strong>Composting:</strong> dewatered sludge mixed with bulking agent (wood chips) and aerobically composted. Thermophilic phase (>55°C) destroys pathogens. Produces a soil conditioner. Requires land, long process time, potential odours.</p></div><div class="kp"><div class="kp-dot"></div><p><strong>Thermal drying:</strong> heat applied to produce a dry granular product (>90% dry solids). Pros: major volume/mass reduction; stable, hygienic product. Cons: very high energy input; major capital cost; potential odour issues.</p></div>'},
+  { id:'w14', tag:'t-slu', tagLabel:'Sludge', title:'Biosolids application to land', freq:'high', freqLabel:'High — all 4 exams',
+    content:'<div class="kp"><div class="kp-dot"></div><p>Biosolids can be applied to agricultural land as a soil conditioner/fertiliser providing N, P, and organic matter — contributing to the circular economy.</p></div><div class="kp"><div class="kp-dot"></div><p>Adverse impacts: pathogen contamination; nutrient overloading (eutrophication, nitrate in groundwater); heavy metal accumulation; emerging contaminants (microplastics, pharmaceuticals).</p></div><div class="kp"><div class="kp-dot"></div><p>Mitigation: pathogen treatment to standard; soil testing; agronomic application rates; exclusion zones near watercourses/wells; no application on waterlogged/frozen ground; monitoring.</p></div><div class="leg-box">EU Sewage Sludge Directive (86/278/EEC) — sets limits for heavy metals in sludge and soil, and conditions for agricultural application.</div>'},
+  { id:'w15', tag:'t-drk', tagLabel:'Drinking water', title:'Drinking water treatment stages', freq:'high', freqLabel:'High — all 4 exams',
+    content:'<div class="flow-row"><div class="flow-box">Abstraction</div><div class="flow-arrow">→</div><div class="flow-box">Screening</div><div class="flow-arrow">→</div><div class="flow-box">Coagulation</div><div class="flow-arrow">→</div><div class="flow-box">Flocculation</div><div class="flow-arrow">→</div><div class="flow-box">Clarification</div><div class="flow-arrow">→</div><div class="flow-box">Filtration</div><div class="flow-arrow">→</div><div class="flow-box">Disinfection</div><div class="flow-arrow">→</div><div class="flow-box">Distribution</div></div><div class="kp"><div class="kp-dot"></div><p><strong>Coagulation:</strong> coagulant (alum/ferric salts) added to destabilise colloidal particles.</p></div><div class="kp"><div class="kp-dot"></div><p><strong>Flocculation:</strong> gentle mixing allows destabilised particles to aggregate into flocs.</p></div><div class="kp"><div class="kp-dot"></div><p><strong>Clarification:</strong> flocs settle or float (DAF) — removes turbidity, colour, Cryptosporidium oocysts.</p></div><div class="kp"><div class="kp-dot"></div><p><strong>Filtration:</strong> rapid gravity sand filters or membrane filtration remove residual turbidity and microorganisms.</p></div><div class="kp"><div class="kp-dot"></div><p><strong>Disinfection:</strong> chlorination (most common), UV, ozonation — kills residual pathogens.</p></div>'},
+  { id:'w16', tag:'t-drk', tagLabel:'Drinking water', title:'Cryptosporidium protection', freq:'high', freqLabel:'High — 3 exams',
+    content:'<div class="kp"><div class="kp-dot"></div><p>Cryptosporidium oocysts are highly resistant to chlorination. Major cause of waterborne disease outbreaks in Ireland.</p></div><div class="kp"><div class="kp-dot"></div><p>Protection approaches: (1) Optimised coagulation/flocculation/clarification. (2) Filtration (sand or membrane). (3) <strong>UV irradiation</strong> — damages oocyst DNA; primary disinfection method effective against Cryptosporidium. (4) Catchment management — reducing oocyst loading in raw water source.</p></div>'},
+  { id:'w17', tag:'t-drk', tagLabel:'Drinking water', title:'Jar testing & water abstraction', freq:'med', freqLabel:'Medium — 2 exams',
+    content:'<div class="kp"><div class="kp-dot"></div><p><strong>Jar testing:</strong> bench-scale simulation to determine optimum coagulant type, dose, and mixing conditions for current raw water quality. Multiple jars dosed with different coagulant concentrations — turbidity and floc quality compared.</p></div><div class="kp"><div class="kp-dot"></div><p><strong>Abstraction intake depth:</strong> in lakes/reservoirs, thermal stratification creates distinct water quality layers — near-surface may have algae; hypolimnion in summer may be oxygen-depleted with high iron/manganese. Intake depth must be carefully chosen and may be adjustable by season.</p></div>'},
+]
+};
+
+const qData = {
+eia: `
+<div class="q-section-label">Project description</div>
+<div class="q-card"><div class="q-meta">${badge('b-jun b-2223','Jun 22/23')}${badge('b-aug b-2324','Aug 23/24')}${badge('b-jun b-2324','Jun 23/24')}</div><div class="q-text">Advise a team preparing an EIAR on what is required to ensure the Project Description conforms to Irish EPA Guidelines. Prepare a short report setting out what is involved.</div><div class="q-marks">33.33 marks — appeared 3 times (highest frequency)</div></div>
+<div class="q-section-label">Alternatives</div>
+<div class="q-card"><div class="q-meta">${badge('b-aug b-2223','Aug 22/23')}${badge('b-aug b-2324','Aug 23/24')}${badge('b-jun b-2324','Jun 23/24')}</div><div class="q-text">The EIA Directive requires an EIAR to contain a description of reasonable alternatives studied by the developer. Discuss the range of alternatives, with examples.</div><div class="q-marks">33.33 marks — appeared 3 times</div></div>
+<div class="q-section-label">Planning documentation & enforcement</div>
+<div class="q-card"><div class="q-meta">${badge('b-jun b-2223','Jun 22/23')}${badge('b-aug b-2223','Aug 22/23')}${badge('b-aug b-2324','Aug 23/24')}</div><div class="q-text">Describe the documentation required to accompany a planning application (Part A, 13.3 marks) and explain the role, responsibilities and powers of the planning authority in relation to planning enforcement, including retention permission (Part B, 20 marks).</div><div class="q-marks">33.33 marks — appeared 3 times</div></div>
+<div class="q-section-label">EIA process & stakeholders</div>
+<div class="q-card"><div class="q-meta">${badge('b-jun b-2223','Jun 22/23')}${badge('b-jun b-2324','Jun 23/24')}</div><div class="q-text">Explain the difference between an EIAR and the EIA process, and set out the roles and interests of the various stakeholders likely to be involved.</div><div class="q-marks">33.33 marks — appeared 2 times</div></div>
+<div class="q-card"><div class="q-meta">${badge('b-jun b-2223','Jun 22/23')}${badge('b-jun b-2324','Jun 23/24')}</div><div class="q-text">Screening and Scoping are two separate and distinct stages of the EIA process. Discuss the main components of both stages.</div><div class="q-marks">33.33 marks — appeared 2 times</div></div>
+<div class="q-section-label">Post-authorisation & environmental factors</div>
+<div class="q-card"><div class="q-meta">${badge('b-aug b-2223','Aug 22/23')}${badge('b-aug b-2324','Aug 23/24')}</div><div class="q-text">Discuss the systems needed to ensure all conditions and mitigation measures are effectively implemented after project authorisation.</div><div class="q-marks">33.33 marks — appeared 2 times</div></div>
+<div class="q-card"><div class="q-meta">${badge('b-jun b-2223','Jun 22/23')}</div><div class="q-text">List and discuss the Fundamental Principles to be followed when preparing an EIAR.</div><div class="q-marks">33.33 marks</div></div>
+<div class="q-card"><div class="q-meta">${badge('b-aug b-2324','Aug 23/24')}</div><div class="q-text">Article 3 of the EIA Directive — identify and describe the environmental factors that must be assessed.</div><div class="q-marks">33.33 marks</div></div>
+<div class="q-card"><div class="q-meta">${badge('b-aug b-2324','Aug 23/24')}</div><div class="q-text">Outline typical conditions imposed by the Competent Authority (10 marks), explain the function and contents of a CEMP (17.3 marks), and identify additional plans a Competent Authority may request (6 marks).</div><div class="q-marks">33.3 marks (3-part)</div></div>
+<div class="q-card"><div class="q-meta">${badge('b-jun b-2324','Jun 23/24')}</div><div class="q-text">The planning system in Ireland is built around a hierarchy of plans at different spatial scales. Identify each plan and responsible organisation, discuss components of each, and explain how they work together.</div><div class="q-marks">33.3 marks (3-part)</div></div>`,
+
+energy: `
+<div class="q-section-label">Compulsory Q1 (30 marks — 10 × 3-mark short-answer sub-questions)</div>
+<div class="q-card"><div class="q-meta">${badge('b-comp','All exams')}</div><div class="q-text">Recurring short-answer topics: thermal conductivity, U-value calculation, emissivity/absorptivity, degree days, True/False on U-values, Level II vs III audit, insulation properties, avoiding exposure when siting a dwelling, urban heat island, electricity bill information, driving rain index, heat transfer modes, building life cycle phases, embodied energy, solar panel orientation, equipment for site visit.</div><div class="q-marks">30 marks — compulsory in every exam. A calculator is required.</div></div>
+<div class="q-section-label">Long-answer questions Q2–Q4 (answer any 2, 35 marks each)</div>
+<div class="q-card"><div class="q-meta">${badge('b-aug b-2223','Aug 22/23')}${badge('b-jun b-2223','Jun 22/23')}${badge('b-aug b-2324','Aug 23/24')}${badge('b-jun b-2324','Jun 23/24')}</div><div class="q-text">Green/sustainable building design — discuss in terms of site suitability, house design and orientation, building practices and building materials. Reference Irish building legislation and/or environmental building design standards.</div><div class="q-marks">35 marks — appeared in all 4 exams</div></div>
+<div class="q-card"><div class="q-meta">${badge('b-aug b-2223','Aug 22/23')}${badge('b-aug b-2324','Aug 23/24')}${badge('b-jun b-2324','Jun 23/24')}</div><div class="q-text">Energy audit process for a specific facility — describe pre-visit, site visit, and post-visit activities. Always scenario-based (dairy company / pet food manufacturer / pharmaceutical building). Adapt your answer to the context given.</div><div class="q-marks">35 marks — appeared 3 times (Part a: ~20–25 marks; Part b: 10–15 marks for audit report)</div></div>
+<div class="q-card"><div class="q-meta">${badge('b-aug b-2223','Aug 22/23')}${badge('b-jun b-2223','Jun 22/23')}${badge('b-aug b-2324','Aug 23/24')}${badge('b-jun b-2324','Jun 23/24')}</div><div class="q-text">Strategic energy management — data collection and assessment, on-site energy surveys, and energy management action plans. Sometimes one integrated question, sometimes split into headed sub-sections (a/b/c).</div><div class="q-marks">35 marks — appeared in all 4 exams</div></div>
+<div class="q-card"><div class="q-meta">${badge('b-aug b-2324','Aug 23/24')}</div><div class="q-text">Urban heat island effect — explain the effect and discuss methods city planners can use to reduce it (15 marks), plus sustainable building design (20 marks).</div><div class="q-marks">35 marks (2-part)</div></div>
+<div class="q-card"><div class="q-meta">${badge('b-jun b-2223','Jun 22/23')}</div><div class="q-text">A standard energy audit has three distinct and separate phases. Name and describe each phase. Provide examples of energy conservation measures (ECMs) that may be identified.</div><div class="q-marks">35 marks</div></div>
+<div class="q-card"><div class="q-meta">${badge('b-jun b-2324','Jun 23/24')}</div><div class="q-text">Identify and briefly describe the different stages in the life cycle of a typical building (8 marks), then discuss green building techniques in terms of site, design, orientation, practices, and materials (27 marks).</div><div class="q-marks">35 marks (2-part)</div></div>`,
+
+water: `
+<div class="q-section-label">Q1 — Domestic wastewater treatment</div>
+<div class="q-card"><div class="q-meta">${badge('b-jan b-2324','Jan 23/24')}${badge('b-aug b-2324','Aug 23/24')}${badge('b-jan b-2425','Jan 24/25')}</div><div class="q-text">Percolation test — outline the purpose and explain how it is carried out. (Aug 24/25 adds a scenario: T-value >120 min, water table at 0.5m, site 100m from a river — should planning permission be granted?)</div><div class="q-marks">10 marks — appeared 3 times; scenario version adds 15 marks</div></div>
+<div class="q-card"><div class="q-meta">${badge('b-aug b-2324','Aug 23/24')}${badge('b-jan b-2425','Jan 24/25')}</div><div class="q-text">Site characteristics that increase groundwater vulnerability to contamination from a septic tank system.</div><div class="q-marks">10 marks — appeared 2 times</div></div>
+<div class="q-card"><div class="q-meta">${badge('b-jan b-2324','Jan 23/24')}${badge('b-aug b-2425','Aug 24/25')}</div><div class="q-text">Name the Irish legislation for the regulation of septic tank systems.</div><div class="q-marks">3–5 marks — appeared 2 times</div></div>
+<div class="q-card"><div class="q-meta">${badge('b-aug b-2425','Aug 24/25')}</div><div class="q-text">Purpose of the septic tank and percolation bed; most common cause of malfunction and how it is resolved.</div><div class="q-marks">10 + 5 marks</div></div>
+<div class="q-card"><div class="q-meta">${badge('b-jan b-2425','Jan 24/25')}</div><div class="q-text">How a malfunctioning septic tank poses a risk to human health — use one example of a waterborne disease. Outline the main purpose of the National Inspection Plan (2022–2026).</div><div class="q-marks">10 + 3.33 marks</div></div>
+<div class="q-section-label">Q2 — Urban wastewater treatment</div>
+<div class="q-card"><div class="q-meta">${badge('b-jan b-2324','Jan 23/24')}${badge('b-aug b-2425','Aug 24/25')}</div><div class="q-text">Fixed film systems (trickling filters) — basis of design, treatment processes, and two disadvantages.</div><div class="q-marks">20 marks — appeared 2 times</div></div>
+<div class="q-card"><div class="q-meta">${badge('b-aug b-2324','Aug 23/24')}${badge('b-jan b-2425','Jan 24/25')}</div><div class="q-text">Activated sludge process — explain the secondary treatment process.</div><div class="q-marks">15 marks — appeared 2 times</div></div>
+<div class="q-card"><div class="q-meta">${badge('b-jan b-2324','Jan 23/24')}${badge('b-aug b-2324','Aug 23/24')}${badge('b-aug b-2425','Aug 24/25')}${badge('b-jan b-2425','Jan 24/25')}</div><div class="q-text">Tertiary disinfection — in various forms: chlorination pros/cons; Cryptosporidium resistance and alternatives; UV irradiation and its benefits.</div><div class="q-marks">3–10 marks — disinfection appears in all 4 exams</div></div>
+<div class="q-card"><div class="q-meta">${badge('b-jan b-2425','Jan 24/25')}</div><div class="q-text">Biological nitrogen removal — explain the two-step nitrification/denitrification process.</div><div class="q-marks">12 marks</div></div>
+<div class="q-section-label">Q3 — Sludge management</div>
+<div class="q-card"><div class="q-meta">${badge('b-jan b-2324','Jan 23/24')}${badge('b-aug b-2425','Aug 24/25')}</div><div class="q-text">Sludge thickening — purpose and one example of a thickening technique.</div><div class="q-marks">8 marks — appeared 2 times</div></div>
+<div class="q-card"><div class="q-meta">${badge('b-aug b-2324','Aug 23/24')}${badge('b-jan b-2425','Jan 24/25')}${badge('b-aug b-2425','Aug 24/25')}</div><div class="q-text">Anaerobic digestion — outline the key stages and list the key outputs (biogas, digestate).</div><div class="q-marks">15 marks — appeared 3 times (highest frequency sludge question)</div></div>
+<div class="q-card"><div class="q-meta">${badge('b-aug b-2324','Aug 23/24')}${badge('b-aug b-2425','Aug 24/25')}</div><div class="q-text">Alkaline stabilisation — explain the process, one benefit and one disadvantage.</div><div class="q-marks">8 marks — appeared 2 times</div></div>
+<div class="q-card"><div class="q-meta">${badge('b-jan b-2324','Jan 23/24')}${badge('b-aug b-2324','Aug 23/24')}${badge('b-jan b-2425','Jan 24/25')}${badge('b-aug b-2425','Aug 24/25')}</div><div class="q-text">Biosolids application to agricultural land — adverse impacts, mitigation measures, relevant legislation. Appears in all 4 exams in various forms.</div><div class="q-marks">5–10 marks per exam</div></div>
+<div class="q-section-label">Q4 — Drinking water treatment</div>
+<div class="q-card"><div class="q-meta">${badge('b-jan b-2324','Jan 23/24')}${badge('b-aug b-2324','Aug 23/24')}${badge('b-jan b-2425','Jan 24/25')}</div><div class="q-text">Outline the typical and key stages for the treatment of raw water in a drinking water treatment plant and briefly explain their purpose.</div><div class="q-marks">23.33 marks — appeared 3 times (highest frequency drinking water question)</div></div>
+<div class="q-card"><div class="q-meta">${badge('b-jan b-2324','Jan 23/24')}${badge('b-aug b-2425','Aug 24/25')}</div><div class="q-text">Cryptosporidium — explain approaches used in drinking water treatment plants to protect public supplies.</div><div class="q-marks">10 marks — appeared 2 times</div></div>
+<div class="q-card"><div class="q-meta">${badge('b-aug b-2425','Aug 24/25')}</div><div class="q-text">Outline the purpose of coagulation, flocculation, clarification, and filtration in drinking water treatment.</div><div class="q-marks">20 marks</div></div>
+<div class="q-card"><div class="q-meta">${badge('b-jan b-2425','Jan 24/25')}</div><div class="q-text">Jar testing — explain the purpose in relation to the drinking water treatment process.</div><div class="q-marks">10 marks</div></div>`
+};
+
+const flashData = {
+eia: [
+  {q:"What is the difference between EIA and EIAR?",a:"EIA is the overall process (screening, scoping, assessment, consultation, decision-making). EIAR is the written document produced by the developer containing the findings of that process. The EIAR is one output within the broader EIA process."},
+  {q:"What is screening in the EIA process?",a:"Screening determines whether a project requires an EIA at all. Annex I projects require mandatory EIA; Annex II are assessed case-by-case using thresholds and criteria related to scale, location, and sensitivity of the receiving environment."},
+  {q:"What is scoping in the EIA process?",a:"Scoping determines what information must be included in the EIAR — which environmental topics to cover and at what level of detail. It is agreed with the competent authority through a scoping opinion. In Ireland it is not mandatory but strongly encouraged."},
+  {q:"Name four types of alternatives that must be considered in an EIAR.",a:"Site alternatives (different locations), design alternatives (different layouts/configurations), process/technology alternatives, scale alternatives (different sizes), and the 'do nothing' option. Only reasonable and relevant alternatives need to be considered."},
+  {q:"What are the nine environmental factors assessed under Article 3 of the EIA Directive?",a:"Population & human health; biodiversity (flora, fauna, habitats); land, soil & geology; water; air; climate; material assets; cultural heritage; and the interaction between all of the above (cumulative, transboundary, in-combination effects)."},
+  {q:"What documentation must accompany a planning application in Ireland?",a:"Completed application form, site location map, site layout plan, architectural drawings (plans, elevations, sections), planning fee, evidence of public notice (newspaper and site notice). For EIA projects: an EIAR and any required Natura Impact Statement."},
+  {q:"What enforcement powers does a planning authority have?",a:"It can issue a Warning Letter, serve an Enforcement Notice (requiring cessation or remediation), pursue prosecution for non-compliance, and apply to the High Court for an injunction to halt ongoing unauthorised development."},
+  {q:"What is retention permission?",a:"A planning application to retain a development that was carried out without planning permission. The planning authority can grant or refuse it. If refused, the developer must remove or undo the unauthorised development."},
+  {q:"What are the typical contents of a CEMP?",a:"Dust/air quality management, noise and vibration control, water quality and drainage measures, waste management, soil and contamination controls, ecology and habitat protection measures, and emergency response procedures."},
+  {q:"Name the four tiers of the Irish planning hierarchy and the body responsible for each.",a:"National Planning Framework (Government); Regional Spatial and Economic Strategies (Regional Assemblies); County/City Development Plans (County/City Councils); Local Area Plans (Local Authorities). Each lower-tier plan must be consistent with those above it."},
+],
+energy: [
+  {q:"What is thermal conductivity (λ) and why does it matter?",a:"λ measures a material's ability to conduct heat (W/mK). Low λ = good insulator. It determines how much heat flows through building elements and is used to calculate U-values for energy efficiency design."},
+  {q:"What is a U-value and how is it calculated for a multi-layer wall?",a:"U-value (W/m²K) is the thermal transmittance of a building element. Formula: U = 1 / (Rsi + Σ(d/λ) + Rso), where Rsi = 0.13, Rso = 0.04, and R = d/λ for each layer. Lower U-value = better insulation (always TRUE)."},
+  {q:"What is the difference between emissivity and absorptivity?",a:"Emissivity: ability of a surface to emit radiant heat — low-emissivity surfaces (foil, low-e glass) reflect heat back. Absorptivity: ability to absorb radiant energy. Both relate to radiative heat transfer, important for passive solar design and glazing."},
+  {q:"What are degree days and how are they used in energy management?",a:"Degree days measure cumulative temperature difference below a base temperature (15.5°C). They normalise energy consumption for weather — plotting fuel use against degree days reveals whether heating system performance is proportional to weather or indicates inefficiency."},
+  {q:"Name the three modes of heat transfer.",a:"Conduction (through solids — governed by λ), Convection (through fluid movement — natural or forced), and Radiation (electromagnetic waves — no medium needed). Insulation, draught-proofing, and low-e glazing address each respectively."},
+  {q:"Name three advantages of avoiding exposure and prominence when siting a dwelling.",a:"Any three of: reduced wind-driven heat loss, lower heating energy demand, reduced risk of rain penetration, reduced structural wind loading, improved thermal comfort, potential for windbreak landscaping."},
+  {q:"What is the urban heat island effect and two ways to reduce it?",a:"Cities are 2–5°C warmer than rural areas due to heat-absorbing surfaces, reduced vegetation, and waste heat. Reduction: green roofs/walls, urban tree planting, high-albedo (light-coloured) road and roof surfaces, urban parks and water features."},
+  {q:"What is the Driving Rain Index and where is it highest in Ireland?",a:"DRI combines wind speed and rainfall to quantify rain driven against building surfaces. Highest values are on the west coast of Ireland (Connacht and west Munster) due to prevailing south-westerly Atlantic winds."},
+  {q:"What are the pre-visit activities in an energy audit?",a:"Agree scope and objectives with client; request and collect energy bills (2–3 years); review facility drawings; prepare data request forms; arrange site access and H&S requirements; brief the audit team."},
+  {q:"What is the difference between a Level II and Level III energy audit?",a:"Level II: standard detailed audit — analyses bills, surveys systems, identifies ECMs with initial cost-benefit analysis. Level III: investment-grade — detailed sub-metering, energy modelling, and precise financial analysis to justify major capital expenditure."},
+  {q:"What are the main headings in an energy audit report?",a:"Executive summary; introduction and scope; facility description; energy data analysis; benchmarking; site findings; ECMs with costs, savings and payback; prioritised action plan; conclusions and recommendations; appendices."},
+  {q:"What information beyond total cost appears on an electricity bill?",a:"Meter readings, units consumed (kWh), tariff rates (day/night/peak), standing charge, billing period dates, Maximum Import Capacity/demand charge, VAT, PSO levy, and carbon tax component."},
+],
+water: [
+  {q:"What is the acceptable T-value range for a standard percolation bed, and what happens outside this range?",a:"T = 3 to 50 minutes. T <3: soil too permeable — insufficient treatment time before reaching groundwater. T >50: soil too impermeable — waterlogging, surface ponding, and backflow."},
+  {q:"What is the most common cause of septic tank malfunction in Ireland and how is it resolved?",a:"Failure to desludge regularly — sludge overflows into the percolation bed, blocking it. Resolved by regular desludging every 1–3 years and, if blocked, rehabilitating or replacing the percolation bed."},
+  {q:"Name three site characteristics that increase groundwater vulnerability to contamination from a septic tank.",a:"Any three: shallow depth to bedrock; karst/fissured limestone; high permeability soils (gravels, sands); high seasonal water table; proximity to surface water or drinking water wells."},
+  {q:"What is the Water Services (Amendment) Act 2012?",a:"Irish legislation requiring mandatory registration of domestic septic tank systems and establishing a risk-based inspection programme by local authorities to protect human health and the environment."},
+  {q:"Explain the four stages of anaerobic digestion.",a:"(1) Hydrolysis — complex organics broken into soluble compounds. (2) Acidogenesis — converted to volatile fatty acids, alcohols, CO₂, H₂. (3) Acetogenesis — VFAs converted to acetic acid, CO₂, H₂. (4) Methanogenesis — methane and CO₂ produced. Outputs: biogas (60–70% CH₄) and digestate."},
+  {q:"How does the activated sludge process work?",a:"Wastewater enters an aerated reaction tank containing a mixed microbial community. Aerobic bacteria biologically degrade dissolved organics. Mixed liquor flows to a secondary clarifier — settled sludge is returned (RAS); excess removed (WAS)."},
+  {q:"What are trickling filters and two disadvantages?",a:"Fixed film system where wastewater is distributed over media supporting a biofilm. Microorganisms aerobically degrade organic matter as wastewater trickles over. Disadvantages: psychoda fly infestation; odour problems; less flexible than activated sludge; potential media blockage."},
+  {q:"Why is chlorination insufficient against Cryptosporidium, and what is used instead?",a:"Cryptosporidium oocysts are highly resistant to chlorine. UV irradiation is used — it damages the DNA of oocysts, preventing reproduction, without forming disinfection by-products."},
+  {q:"What are the key stages of drinking water treatment in order?",a:"Abstraction → screening → coagulation → flocculation → clarification/settlement → filtration → disinfection → pH correction → distribution. Each stage progressively removes particulates, colour, organics, and microorganisms."},
+  {q:"What is jar testing and why is it carried out?",a:"A bench-scale test to determine the optimum coagulant dose and mixing conditions for current raw water quality. Multiple jars are dosed with different concentrations and compared for turbidity and floc quality. Raw water quality varies seasonally so jar testing allows treatment to be adjusted."},
+  {q:"Name the EU legislation regulating urban wastewater treatment.",a:"EU Urban Wastewater Treatment Directive (Council Directive 91/271/EEC). Requires secondary treatment before discharge; larger agglomerations in sensitive areas must also have tertiary nutrient removal."},
+  {q:"What is alkaline stabilisation of sludge and what are its pros and cons?",a:"Lime added to sludge raises pH to ≥12, killing pathogens and preventing further biological activity. Pro: simple, low-cost, effective pathogen reduction. Con: does not reduce volume; lime cost; pH can drop causing re-activation and odours; increases sludge mass."},
+]
+};
+
+const tipsData = {
+eia: [
+  {h:"Prioritise the top 3 topics",p:"Project description requirements, Alternatives in EIAR, and Planning documentation + enforcement each appeared in 3 out of 4 exams. Mastering these three topics covers a huge portion of likely exam content."},
+  {h:"Know your EIA vs EIAR distinction cold",p:"This appears in 2 exams and is often Part A of a multi-part question worth ~5 marks. It is a quick win — learn it precisely and you'll gain marks early in a question."},
+  {h:"Screening vs scoping — both exams",p:"Always explained as 'two separate and distinct stages.' Be able to clearly distinguish them, describe the main components of each, and explain the legal basis in Ireland."},
+  {h:"Structure multi-part answers carefully",p:"Many questions split marks (e.g. 13.3 + 20, or 5.3 + 8 + 20). Read the marks allocation before writing — don't spend equal time on an 8-mark and a 20-mark part."},
+  {h:"Use examples for alternatives",p:"The alternatives question explicitly says 'use appropriate examples.' Prepare 2–3 real-world examples covering site, design, process, and scale alternatives for different project types (wind farm, road, waste facility)."},
+  {h:"Post-authorisation = two angles",p:"This topic appears as either (a) broad implementation systems or (b) CEMP specifically. Know both: the general monitoring/management framework AND the specific contents of a CEMP."},
+  {h:"Answer 3 of 4 questions",p:"All exams require you to answer 3 questions, all carrying equal marks (~33 marks each). If you see a question on planning hierarchy or Article 3 factors, these have only appeared once — they may be safer to skip if your weaker areas."},
+  {h:"Cite Irish legislation",p:"Reference the Planning and Development Act 2000 (as amended), the EIA Directive (2014/52/EU), and EPA Guidelines where relevant. Naming legislation demonstrates examiner-level knowledge."},
+],
+energy: [
+  {h:"Question 1 is compulsory — prepare every sub-topic",p:"Q1 (30 marks) always has 10 sub-questions at 3 marks each. About 8 of the 10 topics recur across exams. U-value calculation, thermal conductivity, emissivity/absorptivity, urban heat island, and insulation properties are near-certainties."},
+  {h:"Four near-guaranteed long questions",p:"Green building design, energy audit process, strategic energy management data, and energy action plans all appear in 3–4 of the 4 exam papers. You only need to answer 2 of Q2/Q3/Q4 — knowing these four topics well gives you choices."},
+  {h:"U-value calculations — bring a calculator",p:"A calculation appears in every exam. Practice: U = 1/(0.13 + Σd/λ + 0.04). Convert mm to metres first. Show all working — partial credit is available even if arithmetic slips."},
+  {h:"Scenario-based audit questions — adapt your answer",p:"The audit question always describes a specific facility (dairy company, pet food plant, pharma admin building). Tailor your answer — mention the fuels used, building types, and staff numbers given. Generic answers score less."},
+  {h:"Reference Irish legislation in building questions",p:"Questions on green building explicitly ask you to reference legislation. Name Part L of the Building Regulations, NZEB standards, BER ratings, and SEAI. For design standards, mention Passive House or BREEAM if you know them."},
+  {h:"Structure matters for 35-mark questions",p:"Use the headings given in the question (site suitability / house design / building practices / materials). Examiners mark against these headings. A well-organised answer covering all four areas will outscore a longer but disorganised one."},
+  {h:"True/False is always on U-values",p:"'Lower U-value = better insulation' is TRUE. 'Higher U-value = better insulation' is FALSE. This appears in 3 of the 4 exams — it is a guaranteed easy 3 marks."},
+  {h:"West coast for driving rain",p:"Driving Rain Index is highest on the west coast of Ireland (Connacht/west Munster). Know the location and the reason (prevailing south-westerly winds off the Atlantic)."},
+],
+water: [
+  {h:"The structure is completely fixed",p:"Every exam has the same four questions: Q1 = Domestic WWT, Q2 = Urban WWT, Q3 = Sludge, Q4 = Drinking Water. You answer any 3 of 4. You can plan your revision by choosing which three topics to prioritise."},
+  {h:"Percolation test = near certainty",p:"The percolation test question appeared in all 4 exams — always worth 10 marks. The August 2024/25 paper adds a scenario requiring a decision on planning permission. Know both the theory and how to apply the T-value criteria."},
+  {h:"Anaerobic digestion — learn the 4 stages",p:"Appeared in 3 of 4 exams and always asks for the key stages (hydrolysis, acidogenesis, acetogenesis, methanogenesis) and outputs (biogas, digestate). A guaranteed 15-mark answer if you know it well."},
+  {h:"Drinking water treatment stages — a sure thing",p:"The full treatment train question appeared 3 times (23 marks each time). Know each stage in order — coagulation, flocculation, clarification, filtration, disinfection — and be able to briefly explain the purpose of each."},
+  {h:"Know your legislation precisely",p:"Legislation questions appear in every exam, usually worth 3–5 quick marks. Memorise exact names: Water Services (Amendment) Act 2012; EU Urban Wastewater Treatment Directive (91/271/EEC); EU Sewage Sludge Directive (86/278/EEC); European Communities (Drinking Water) Regulations 2023."},
+  {h:"Secondary treatment — know both systems",p:"Trickling filters appeared 3 times, activated sludge appeared 2 times. In any given exam, you are likely to get one or the other. Knowing both keeps Q2 as a strong option."},
+  {h:"Biosolids appears in every exam",p:"The topic is asked in different ways — impacts, mitigation, legislation, circular economy angle. Always cover at least two distinct adverse impacts and two mitigation measures, and name the Sewage Sludge Directive."},
+  {h:"Cryptosporidium connects two questions",p:"It appears in Urban WWT (chlorine resistance → UV treatment) and Drinking Water (treatment plant protection). Understand why it resists chlorine and what works instead — UV irradiation and optimised filtration are the key answers."},
+]
+};
+
+// Legislation data for water module
+function renderLegislation() {
+  const el = document.getElementById('water-leg-grid');
+  const legItems = [
+    {cls:'l-dom',tag:'t-dom',tagLabel:'Domestic WWT',title:'Water Services (Amendment) Act 2012',p:'Regulates the operation and maintenance of domestic septic tank systems in Ireland. Introduced mandatory registration and a risk-based inspection programme operated by local authorities.'},
+    {cls:'l-dom',tag:'t-dom',tagLabel:'Domestic WWT',title:'National Inspection Plan 2022–2026',p:'Sets out the programme of inspections for domestic wastewater treatment systems, prioritising high-risk areas near drinking water sources and in karst geology regions.'},
+    {cls:'l-urb',tag:'t-urb',tagLabel:'Urban WWT',title:'EU Urban Wastewater Treatment Directive (91/271/EEC)',p:'Main EU legislation regulating the collection, treatment, and discharge of urban wastewater. Sets standards based on agglomeration size (population equivalent). Recently revised as Directive 2024/3019/EU.'},
+    {cls:'l-slu',tag:'t-slu',tagLabel:'Sludge',title:'EU Sewage Sludge Directive (86/278/EEC)',p:'Protects the environment from adverse effects of sewage sludge used in agriculture. Sets limit values for heavy metals in soil and sludge. Implemented in Ireland via the European Communities (Use of Sewage Sludge in Agriculture) Regulations 1998.'},
+    {cls:'l-drk',tag:'t-drk',tagLabel:'Drinking water',title:'European Communities (Drinking Water) Regulations 2023',p:'Primary Irish legislation implementing the EU Drinking Water Directive. Sets parametric values for drinking water quality, monitoring requirements, and obligations on water suppliers. Enforced by the EPA and local authorities.'},
+    {cls:'l-dom',tag:'t-dom',tagLabel:'Domestic WWT',title:'EPA Code of Practice — Wastewater Treatment Systems for Single Houses',p:'Technical guidance for the design, installation, and assessment of septic tank systems. Sets requirements for percolation testing, site assessment, and minimum separation distances.'},
+  ];
+  legItems.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'leg-card';
+    card.innerHTML = '<span class="topic-tag ' + item.tag + '" style="margin-bottom:7px;display:inline-block;">' + item.tagLabel + '</span>' +
+      '<div class="leg-card-title" style="border-left:3px solid;padding-left:8px;border-radius:0 4px 4px 0;margin-bottom:6px;' +
+      (item.cls === 'l-dom' ? 'border-color:#d68e18;' : item.cls === 'l-urb' ? 'border-color:#7f77dd;' : item.cls === 'l-slu' ? 'border-color:#1d9e75;' : 'border-color:#378add;') +
+      '">' + item.title + '</div><p>' + item.p + '</p>';
+    el.appendChild(card);
+  });
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+['eia','energy','water'].forEach(mod => {
+  renderTopics(mod);
+  renderQuestions(mod);
+  renderTips(mod);
+  updateFlash(mod);
+});
+renderLegislation();
+renderCalcLayers();
+</script>
+</body>
+</html>
