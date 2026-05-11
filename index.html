@@ -917,7 +917,11 @@ function backToExam(examId) {
   if (qv) qv.style.display = '';
 }
 
-function getModelAnswer(topicId) {
+function getModelAnswer(examId, qNum, topicId) {
+  // Build the lookup key matching how practiceAnswers is keyed
+  var jsKey = examId + "___" + qNum.replace(/ /g,"_").replace(/\(/g,"").replace(/\)/g,"").replace(/\./g,"_");
+  if (practiceAnswers[jsKey]) return practiceAnswers[jsKey];
+  // Fallback to topicData
   if (!topicData[topicId]) return '<span class="skipped-note">No model answer available for this topic.</span>';
   var topic = topicData[topicId];
   var html = '';
@@ -947,7 +951,7 @@ function finishExam(mod, examId) {
   qs.forEach(function(q) {
     var ta = document.getElementById(q.id);
     var userAnswer = ta ? ta.value.trim() : '';
-    var modelHtml = getModelAnswer(q.topic);
+    var modelHtml = getModelAnswer(examId, q.num, q.topic);
     
     html += '<div class="result-block">';
     html += '<div class="result-q-header"><span class="result-q-num">' + q.num + '</span><span class="result-q-marks">' + q.marks + ' marks</span></div>';
@@ -974,6 +978,832 @@ function finishExam(mod, examId) {
   if (rv) { rv.classList.add('active'); rv.scrollIntoView({behavior:'smooth'}); }
 }
 
+
+const practiceAnswers = {
+  "eia_aug2223___Q1": `<b>Project Description Requirements (Irish EPA Guidelines)</b><br><br>
+<b>1. Physical characteristics of the project</b><br>
+Describe the physical characteristics of the whole project including land use requirements during construction and operational phases. Include site location maps at appropriate scales, a site layout plan, and maps identifying the project in its broader context.<br><br>
+<b>2. Location of the project</b><br>
+Describe the geographical, environmental and human context of the project including sensitive areas in the vicinity (Natura 2000 sites, protected species habitats, flood zones, water bodies). Reference existing land uses on and adjacent to the site.<br><br>
+<b>3. Nature and amount of materials used</b><br>
+Describe the production processes, nature and quantity of materials used during construction and operation. Identify any hazardous materials stored or used on site.<br><br>
+<b>4. Expected residues and emissions</b><br>
+Provide estimates of the type and quantities of expected residues and emissions including: water (volumes, contaminants); air (dust, exhaust emissions); soil (contamination risk); noise and vibration; light and heat; waste volumes and disposal routes.<br><br>
+<b>5. Project phases</b><br>
+The description must cover all phases: pre-construction, construction, operation, and decommissioning/dismantling where relevant.<br><br>
+<b>6. Main alternatives considered</b><br>
+Include a brief reference to alternatives studied.<br><br>
+<b>7. Any permits or licences already in place</b><br>
+Reference any existing or simultaneously sought permits, licences or consents (e.g. EPA licence, foreshore licence, water discharge licence).`,
+  "eia_aug2223___Q2": `<b>Alternatives in an EIAR</b><br><br>
+The EIA Directive (Article 5) requires the developer to include a description of the reasonable alternatives studied and the main reasons for the chosen option, taking into account the environmental effects.<br><br>
+<b>Types of alternatives that must be described:</b><br><br>
+<b>1. Site alternatives (location alternatives)</b><br>
+Different geographical locations for the project. Example: for a wind farm, alternative sites with lower visual impact or further from sensitive habitats.<br><br>
+<b>2. Design alternatives (layout/configuration alternatives)</b><br>
+Different physical layouts or configurations at the same site. Example: different treatment train layouts for a wastewater treatment plant.<br><br>
+<b>3. Process/technology alternatives</b><br>
+Different technologies to achieve the same objective. Example: different production technologies with different emission profiles.<br><br>
+<b>4. Scale alternatives</b><br>
+Different sizes or capacities. Example: a smaller wind farm with fewer turbines assessed against a larger one.<br><br>
+<b>5. The "do-nothing" alternative</b><br>
+The scenario where the project does not proceed — provides a baseline for measuring environmental effects of the project.<br><br>
+<b>Environmental comparison</b><br>
+Each alternative must be described and its environmental effects compared with the proposed project. The EIAR must explain the main reasons for selecting the chosen option on environmental grounds.<br><br>
+<b>Key point:</b> Only alternatives that are genuinely reasonable and technically feasible need to be considered.`,
+  "eia_aug2223___Q3a": `<b>Documentation required for a planning application</b><br><br>
+<b>1. Completed application form</b><br>
+Applicant's name, address, description of proposed development, and the nature and extent of works.<br><br>
+<b>2. Site location map</b><br>
+Ordnance Survey map (1:1,000 or 1:2,500 scale) with the application site outlined in red and other land in the applicant's ownership outlined in blue.<br><br>
+<b>3. Site layout plan</b><br>
+Showing existing and proposed layout, site boundaries, dimensions, access points, car parking, landscaping, and relationship to neighbouring properties and roads.<br><br>
+<b>4. Architectural drawings</b><br>
+Floor plans, elevations, and cross-sections at appropriate scales (1:100 or 1:200) showing the proposed development in detail.<br><br>
+<b>5. Correct planning fee</b><br>
+Calculated in accordance with the Planning and Development Regulations based on type and scale of development.<br><br>
+<b>6. Public notices</b><br>
+(a) Newspaper notice: published in an approved local newspaper; (b) Site notice: erected and maintained on the site for the duration of the application period (minimum 5 weeks), visible from a public road.<br><br>
+<b>7. Additional documents where required</b><br>
+Environmental Impact Assessment Report (EIAR) for EIA threshold projects; Natura Impact Statement (NIS) where the project may affect a Natura 2000 site; Flood Risk Assessment; Archaeological impact assessment; Traffic impact assessment.<br><br>
+<b>Validation</b><br>
+The planning authority checks all documentation for completeness. If any item is missing, the application is declared invalid and returned.`,
+  "eia_aug2223___Q3b": `<b>Role, responsibilities and powers of the planning authority in planning enforcement</b><br><br>
+<b>Legal basis:</b> Part VIII of the Planning and Development Act 2000 (as amended).<br><br>
+<b>Role and responsibilities:</b><br>
+The planning authority has a duty to investigate complaints about unauthorised development and may take enforcement action where development is carried out without planning permission or in material contravention of a permission. Enforcement is generally complaint-driven but authorities can also act proactively.<br><br>
+<b>Powers:</b><br>
+<b>1. Warning Letter</b> — The first step. Issued to the person believed to be carrying out unauthorised development, requiring them to stop or remedy the breach.<br><br>
+<b>2. Enforcement Notice</b> — If the warning letter is ignored, the authority may serve an enforcement notice requiring cessation and/or restoration within a specified timeframe. Non-compliance is a criminal offence.<br><br>
+<b>3. Prosecution</b> — The authority may initiate criminal proceedings. On conviction, fines and/or imprisonment may be imposed.<br><br>
+<b>4. High Court Injunction</b> — The authority can apply to the High Court for an injunction to restrain ongoing unauthorised development. Used in urgent cases where serious environmental or public harm is threatened.<br><br>
+<b>Time limits:</b><br>
+Enforcement action must generally be taken within 7 years of the unauthorised development commencing.<br><br>
+<b>Retention permission — rectifying unauthorised development:</b><br>
+Yes. A developer who has carried out unauthorised development may apply for retention permission — a planning application to retain the development as built. The planning authority considers this in the normal way and may grant (with or without conditions) or refuse. If refused, the developer must remove or restore the development.`,
+  "eia_aug2223___Q4": `<b>Systems for implementing EIAR conditions and mitigation measures</b><br><br>
+<b>1. Conditions of consent</b><br>
+The competent authority incorporates key mitigation measures from the EIAR as legally binding conditions of planning permission. Non-compliance is a criminal offence and can result in enforcement action.<br><br>
+<b>2. Construction Environmental Management Plan (CEMP)</b><br>
+Typically required as a pre-commencement condition. Contains all practical on-site measures for managing environmental impacts during construction. Must be approved before works begin and followed throughout.<br><br>
+<b>3. Environmental Management System (EMS)</b><br>
+For the operational phase, an ISO 14001-certified EMS provides a systematic framework for managing environmental performance on an ongoing basis using the Plan-Do-Check-Act cycle.<br><br>
+<b>4. Environmental monitoring programme</b><br>
+Covers both construction and operational phases. Specifies: what is monitored (water quality, noise, dust, ecology); monitoring locations and frequency; threshold/trigger levels; who carries out monitoring and who receives reports. For large projects in sensitive environments this may include continuous real-time monitoring.<br><br>
+<b>5. Ecological Clerk of Works (ECoW)</b><br>
+An independent ecologist on site during construction to ensure ecological mitigation measures are correctly implemented in real time.<br><br>
+<b>6. Environmental auditing and reporting</b><br>
+Regular environmental compliance audits comparing actual performance against EIAR mitigation commitments and consent conditions. Audit reports submitted to the competent authority.<br><br>
+<b>7. Complaint and incident response procedures</b><br>
+Formal procedures for handling environmental complaints from the public and for responding to environmental incidents, with records maintained.`,
+  "eia_aug2324___Q1a": `<b>Documentation required for a planning application</b><br><br>
+<b>1. Completed application form</b><br>
+Applicant's name, address, description of proposed development, and the nature and extent of works.<br><br>
+<b>2. Site location map</b><br>
+Ordnance Survey map (1:1,000 or 1:2,500 scale) with the application site outlined in red and other land in the applicant's ownership outlined in blue.<br><br>
+<b>3. Site layout plan</b><br>
+Showing existing and proposed layout, site boundaries, dimensions, access points, car parking, landscaping, and relationship to neighbouring properties and roads.<br><br>
+<b>4. Architectural drawings</b><br>
+Floor plans, elevations, and cross-sections at appropriate scales (1:100 or 1:200) showing the proposed development in detail.<br><br>
+<b>5. Correct planning fee</b><br>
+Calculated in accordance with the Planning and Development Regulations based on type and scale of development.<br><br>
+<b>6. Public notices</b><br>
+(a) Newspaper notice: published in an approved local newspaper; (b) Site notice: erected and maintained on the site for the duration of the application period (minimum 5 weeks), visible from a public road.<br><br>
+<b>7. Additional documents where required</b><br>
+Environmental Impact Assessment Report (EIAR) for EIA threshold projects; Natura Impact Statement (NIS) where the project may affect a Natura 2000 site; Flood Risk Assessment; Archaeological impact assessment; Traffic impact assessment.<br><br>
+<b>Validation</b><br>
+The planning authority checks all documentation for completeness. If any item is missing, the application is declared invalid and returned.`,
+  "eia_aug2324___Q1b": `<b>Role, responsibilities and powers of the planning authority in planning enforcement</b><br><br>
+<b>Legal basis:</b> Part VIII of the Planning and Development Act 2000 (as amended).<br><br>
+<b>Role and responsibilities:</b><br>
+The planning authority has a duty to investigate complaints about unauthorised development and may take enforcement action where development is carried out without planning permission or in material contravention of a permission. Enforcement is generally complaint-driven but authorities can also act proactively.<br><br>
+<b>Powers:</b><br>
+<b>1. Warning Letter</b> — The first step. Issued to the person believed to be carrying out unauthorised development, requiring them to stop or remedy the breach.<br><br>
+<b>2. Enforcement Notice</b> — If the warning letter is ignored, the authority may serve an enforcement notice requiring cessation and/or restoration within a specified timeframe. Non-compliance is a criminal offence.<br><br>
+<b>3. Prosecution</b> — The authority may initiate criminal proceedings. On conviction, fines and/or imprisonment may be imposed.<br><br>
+<b>4. High Court Injunction</b> — The authority can apply to the High Court for an injunction to restrain ongoing unauthorised development. Used in urgent cases where serious environmental or public harm is threatened.<br><br>
+<b>Time limits:</b><br>
+Enforcement action must generally be taken within 7 years of the unauthorised development commencing.<br><br>
+<b>Retention permission — rectifying unauthorised development:</b><br>
+Yes. A developer who has carried out unauthorised development may apply for retention permission — a planning application to retain the development as built. The planning authority considers this in the normal way and may grant (with or without conditions) or refuse. If refused, the developer must remove or restore the development.`,
+  "eia_aug2324___Q2": `<b>Environmental factors assessed under Article 3 of the EIA Directive</b><br><br>
+Article 3 of EIA Directive 2014/52/EU requires assessment of direct and indirect significant effects on:<br><br>
+<b>1. Population and human health</b> — effects on health and wellbeing of people living near the project (noise, dust, emissions, traffic, amenity).<br><br>
+<b>2. Biodiversity</b> — effects on flora, fauna, habitats, ecosystems, and ecological connectivity. Must include assessment of effects on Natura 2000 sites and protected species.<br><br>
+<b>3. Land, soil and geology</b> — effects on soil quality, soil structure, land use, geological features, and contamination.<br><br>
+<b>4. Water</b> — effects on surface water bodies and groundwater including water quality, hydrology, flooding, and Water Framework Directive objectives.<br><br>
+<b>5. Air</b> — effects on air quality including dust, particulate matter, exhaust emissions, and odour.<br><br>
+<b>6. Climate</b> — direct and indirect effects including greenhouse gas emissions, carbon sequestration, and vulnerability to climate change.<br><br>
+<b>7. Material assets</b> — effects on physical assets including infrastructure (roads, utilities), agricultural land, and economic assets.<br><br>
+<b>8. Cultural heritage</b> — effects on archaeological heritage (sites, monuments), architectural heritage (protected structures), and landscape character.<br><br>
+<b>9. Interaction between the above factors</b> — cumulative, transboundary, and in-combination effects arising from interactions between the above factors.`,
+  "eia_aug2324___Q3": `<b>Alternatives in an EIAR</b><br><br>
+The EIA Directive (Article 5) requires the developer to include a description of the reasonable alternatives studied and the main reasons for the chosen option, taking into account the environmental effects.<br><br>
+<b>Types of alternatives that must be described:</b><br><br>
+<b>1. Site alternatives (location alternatives)</b><br>
+Different geographical locations for the project. Example: for a wind farm, alternative sites with lower visual impact or further from sensitive habitats.<br><br>
+<b>2. Design alternatives (layout/configuration alternatives)</b><br>
+Different physical layouts or configurations at the same site. Example: different treatment train layouts for a wastewater treatment plant.<br><br>
+<b>3. Process/technology alternatives</b><br>
+Different technologies to achieve the same objective. Example: different production technologies with different emission profiles.<br><br>
+<b>4. Scale alternatives</b><br>
+Different sizes or capacities. Example: a smaller wind farm with fewer turbines assessed against a larger one.<br><br>
+<b>5. The "do-nothing" alternative</b><br>
+The scenario where the project does not proceed — provides a baseline for measuring environmental effects of the project.<br><br>
+<b>Environmental comparison</b><br>
+Each alternative must be described and its environmental effects compared with the proposed project. The EIAR must explain the main reasons for selecting the chosen option on environmental grounds.<br><br>
+<b>Key point:</b> Only alternatives that are genuinely reasonable and technically feasible need to be considered.`,
+  "eia_aug2324___Q4a": `<b>Typical conditions imposed by the Competent Authority</b><br><br>
+<b>Pre-commencement conditions</b><br>
+• Submission and written approval of a Construction Environmental Management Plan (CEMP) before works begin<br>
+• Submission of detailed drainage design, archaeological watching brief arrangements, and ecological management plans<br>
+• Agreement of construction working hours and traffic management routes<br><br>
+<b>Mitigation conditions</b><br>
+• Implementation of all mitigation measures specified in the EIAR<br>
+• Noise and vibration limits during construction and operation<br>
+• Dust suppression measures during earthworks<br>
+• Restrictions on works during ecologically sensitive periods (e.g. bird nesting season)<br>
+• Water quality protection measures during construction<br><br>
+<b>Monitoring and reporting conditions</b><br>
+• Environmental monitoring programmes (water quality, noise, air quality) with results submitted at specified intervals<br>
+• Appointment of a named environmental manager or ecological clerk of works<br>
+• Reporting of any environmental incidents to the authority<br><br>
+<b>Operational conditions</b><br>
+• Landscaping and habitat creation to be completed within specified timeframes<br>
+• Operational noise or emission limits<br>
+• Restrictions on operational hours<br><br>
+<b>Decommissioning conditions</b><br>
+• Requirement to restore the site to its original condition at end of project life`,
+  "eia_aug2324___Q4b": `<b>Construction Environmental Management Plan (CEMP)</b><br><br>
+<b>Function:</b><br>
+A CEMP is a site-specific document setting out how all environmental impacts will be managed and mitigated during construction. It translates EIAR mitigation commitments into practical on-site management procedures. Typically required as a pre-commencement planning condition and must be approved before construction begins.<br><br>
+<b>Typical contents:</b><br><br>
+<b>1. Project description and programme</b> — overview of construction works, phasing, and programme.<br><br>
+<b>2. Environmental management team</b> — names and responsibilities of the Environmental Manager, Ecological Clerk of Works, and key personnel.<br><br>
+<b>3. Dust and air quality management</b> — measures to control dust from earthworks and vehicle movements; monitoring and trigger levels.<br><br>
+<b>4. Noise and vibration management</b> — working hours, noise limits, vibration monitoring near sensitive receptors, complaint handling procedures.<br><br>
+<b>5. Water quality and drainage</b> — silt trap and settlement pond design; prevention of concrete washout, fuel and chemical spillage entering watercourses.<br><br>
+<b>6. Waste management</b> — waste management plan, segregation on site, approved disposal routes.<br><br>
+<b>7. Soil and contamination management</b> — topsoil stripping, storage and reinstatement; contaminated land management protocol.<br><br>
+<b>8. Ecology and habitat protection</b> — pre-clearance checks for protected species; exclusion fencing; timing restrictions; emergency procedures if protected species encountered.<br><br>
+<b>9. Cultural heritage</b> — archaeological watching brief arrangements; procedures if unexpected finds are encountered.<br><br>
+<b>10. Emergency response</b> — environmental incident response plan including spill procedures.`,
+  "eia_aug2324___Q4c": `<b>Additional plans that may be requested by a Competent Authority</b><br><br>
+Beyond the CEMP, a competent authority may require:<br><br>
+<b>Traffic Management Plan (TMP)</b> — controls construction vehicle routes, delivery times, site access, and monitoring of traffic impacts on local roads.<br><br>
+<b>Landscape and Ecological Management Plan (LEMP)</b> — details long-term management of habitats, planting schemes, and biodiversity enhancement during the operational phase.<br><br>
+<b>Flood Risk Management Plan</b> — particularly for developments in or near flood zones.<br><br>
+<b>Water Quality Monitoring Plan</b> — for projects near water bodies, specifying monitoring locations, parameters, frequency and reporting.<br><br>
+<b>Archaeological Monitoring Plan</b> — for sites with archaeological potential, requiring an archaeologist on site during ground-breaking works.<br><br>
+<b>Waste Management Plan</b> — detailed plan for all waste streams generated during construction and/or operation.<br><br>
+<b>Decommissioning Plan</b> — required for projects with a finite operational life (wind farms, quarries) setting out site restoration at end of life.<br><br>
+<b>Operational Environmental Management System (EMS)</b> — for large operational facilities, an ISO 14001-certified EMS may be required.`,
+  "eia_jun2223___Q1a": `<b>Documentation required for a planning application</b><br><br>
+<b>1. Completed application form</b><br>
+Applicant's name, address, description of proposed development, and the nature and extent of works.<br><br>
+<b>2. Site location map</b><br>
+Ordnance Survey map (1:1,000 or 1:2,500 scale) with the application site outlined in red and other land in the applicant's ownership outlined in blue.<br><br>
+<b>3. Site layout plan</b><br>
+Showing existing and proposed layout, site boundaries, dimensions, access points, car parking, landscaping, and relationship to neighbouring properties and roads.<br><br>
+<b>4. Architectural drawings</b><br>
+Floor plans, elevations, and cross-sections at appropriate scales (1:100 or 1:200) showing the proposed development in detail.<br><br>
+<b>5. Correct planning fee</b><br>
+Calculated in accordance with the Planning and Development Regulations based on type and scale of development.<br><br>
+<b>6. Public notices</b><br>
+(a) Newspaper notice: published in an approved local newspaper; (b) Site notice: erected and maintained on the site for the duration of the application period (minimum 5 weeks), visible from a public road.<br><br>
+<b>7. Additional documents where required</b><br>
+Environmental Impact Assessment Report (EIAR) for EIA threshold projects; Natura Impact Statement (NIS) where the project may affect a Natura 2000 site; Flood Risk Assessment; Archaeological impact assessment; Traffic impact assessment.<br><br>
+<b>Validation</b><br>
+The planning authority checks all documentation for completeness. If any item is missing, the application is declared invalid and returned.`,
+  "eia_jun2223___Q1b": `<b>Role, responsibilities and powers of the planning authority in planning enforcement</b><br><br>
+<b>Legal basis:</b> Part VIII of the Planning and Development Act 2000 (as amended).<br><br>
+<b>Role and responsibilities:</b><br>
+The planning authority has a duty to investigate complaints about unauthorised development and may take enforcement action where development is carried out without planning permission or in material contravention of a permission. Enforcement is generally complaint-driven but authorities can also act proactively.<br><br>
+<b>Powers:</b><br>
+<b>1. Warning Letter</b> — The first step. Issued to the person believed to be carrying out unauthorised development, requiring them to stop or remedy the breach.<br><br>
+<b>2. Enforcement Notice</b> — If the warning letter is ignored, the authority may serve an enforcement notice requiring cessation and/or restoration within a specified timeframe. Non-compliance is a criminal offence.<br><br>
+<b>3. Prosecution</b> — The authority may initiate criminal proceedings. On conviction, fines and/or imprisonment may be imposed.<br><br>
+<b>4. High Court Injunction</b> — The authority can apply to the High Court for an injunction to restrain ongoing unauthorised development. Used in urgent cases where serious environmental or public harm is threatened.<br><br>
+<b>Time limits:</b><br>
+Enforcement action must generally be taken within 7 years of the unauthorised development commencing.<br><br>
+<b>Retention permission — rectifying unauthorised development:</b><br>
+Yes. A developer who has carried out unauthorised development may apply for retention permission — a planning application to retain the development as built. The planning authority considers this in the normal way and may grant (with or without conditions) or refuse. If refused, the developer must remove or restore the development.`,
+  "eia_jun2223___Q2": `<b>Project Description Requirements (Irish EPA Guidelines)</b><br><br>
+<b>1. Physical characteristics of the project</b><br>
+Describe the physical characteristics of the whole project including land use requirements during construction and operational phases. Include site location maps at appropriate scales, a site layout plan, and maps identifying the project in its broader context.<br><br>
+<b>2. Location of the project</b><br>
+Describe the geographical, environmental and human context of the project including sensitive areas in the vicinity (Natura 2000 sites, protected species habitats, flood zones, water bodies). Reference existing land uses on and adjacent to the site.<br><br>
+<b>3. Nature and amount of materials used</b><br>
+Describe the production processes, nature and quantity of materials used during construction and operation. Identify any hazardous materials stored or used on site.<br><br>
+<b>4. Expected residues and emissions</b><br>
+Provide estimates of the type and quantities of expected residues and emissions including: water (volumes, contaminants); air (dust, exhaust emissions); soil (contamination risk); noise and vibration; light and heat; waste volumes and disposal routes.<br><br>
+<b>5. Project phases</b><br>
+The description must cover all phases: pre-construction, construction, operation, and decommissioning/dismantling where relevant.<br><br>
+<b>6. Main alternatives considered</b><br>
+Include a brief reference to alternatives studied.<br><br>
+<b>7. Any permits or licences already in place</b><br>
+Reference any existing or simultaneously sought permits, licences or consents (e.g. EPA licence, foreshore licence, water discharge licence).`,
+  "eia_jun2223___Q3a": `<b>EIA vs EIAR — key distinction</b><br><br>
+<b>Environmental Impact Assessment (EIA)</b> is the process — a systematic procedure used to identify, describe, assess and evaluate the likely significant effects of a proposed project on the environment before development consent is given. It is a decision-making tool, not a document. The EIA process includes: screening, scoping, baseline data collection, impact prediction and evaluation, mitigation measure identification, preparation of the EIAR, public consultation, competent authority review, and post-authorisation monitoring.<br><br>
+<b>Environmental Impact Assessment Report (EIAR)</b> is the document — the written report prepared by or on behalf of the developer and submitted as part of the planning application. It contains all the information required under the EIA Directive and Irish Regulations, including: project description, alternatives considered, current state of the environment (baseline), assessment of likely significant effects, mitigation measures proposed, monitoring programme, and a non-technical summary.<br><br>
+<b>In summary:</b> The EIA is the overall process; the EIAR is one of the key outputs of that process. The EIAR is the document and the EIA is the procedure.`,
+  "eia_jun2223___Q3a_cont_": `<b>Stakeholders in the EIA process and their roles/interests</b><br><br>
+<b>1. Developer/applicant</b><br>
+Initiates the project; commissions and funds the EIAR; responsible for its accuracy, completeness and objectivity. Must engage with the competent authority in pre-application consultation and implement mitigation measures and monitoring as required.<br><br>
+<b>2. Competent Authority</b><br>
+Typically the local planning authority or An Bord Pleanála for strategic infrastructure. Receives and assesses the EIAR; consults with statutory bodies and the public; makes the planning decision; may impose conditions; ensures EIA procedural requirements are met.<br><br>
+<b>3. Statutory consultees</b><br>
+Bodies required by law to be consulted: EPA, National Parks and Wildlife Service (NPWS), Irish Water, Transport Infrastructure Ireland, Heritage Council, An Taisce, relevant local authorities. Their interest is in protecting environmental, biodiversity, heritage, water and infrastructure resources within their remit.<br><br>
+<b>4. The public and interest groups</b><br>
+Any member of the public has the right to inspect and make submissions on the EIAR during the public consultation period. Environmental NGOs and local community groups often participate actively to protect local environment, amenity and quality of life.<br><br>
+<b>5. EIA consultants and specialists</b><br>
+The multidisciplinary team that prepares the EIAR: ecologists, hydrologists, noise consultants, air quality specialists, archaeologists, traffic engineers. Their role is to provide objective expert assessment of impacts in their specialist area.`,
+  "eia_jun2223___Q3b": `<b>Screening and Scoping — two separate and distinct stages of EIA</b><br><br>
+<b>SCREENING</b><br>
+Screening is the first stage of the EIA process. Its purpose is to determine whether a proposed project requires an EIA at all.<br><br>
+How it works:<br>
+• <b>Annex I projects</b> (EIA Directive): always require EIA — large infrastructure projects such as motorways, airports, major industrial installations, large wind farms.<br>
+• <b>Annex II projects</b>: require case-by-case assessment examining size and scale; location (sensitivity of receiving environment); and nature of potential impacts.<br>
+• The competent authority issues a screening determination (EIA required or not). The developer may request a determination before submitting a planning application.<br><br>
+<b>SCOPING</b><br>
+Scoping determines what information needs to be included in the EIAR: which environmental topics, at what level of detail, and what methodologies to use.<br><br>
+How it works:<br>
+• Scoping is not mandatory in Ireland but is strongly recommended and widely used.<br>
+• The developer submits a scoping request to the competent authority.<br>
+• The competent authority consults with statutory bodies and issues a scoping opinion.<br>
+• A good scoping process ensures proportionality while ensuring all significant impacts are assessed.<br><br>
+<b>Key distinction:</b><br>
+Screening answers: "Is an EIA needed?" (in/out decision)<br>
+Scoping answers: "What should the EIAR contain?" (content/depth decision)<br>
+They are sequential — scoping only occurs after a decision that EIA is required.`,
+  "eia_jun2223___Q4": `<b>Fundamental Principles to be followed when preparing an EIAR</b><br><br>
+<b>1. Objectivity and impartiality</b><br>
+The EIAR must be prepared on an objective, impartial basis. Although funded by the developer, it must present both positive and negative impacts fairly. Where there is scientific uncertainty, this must be acknowledged and the precautionary principle applied.<br><br>
+<b>2. Proportionality</b><br>
+The level of detail should be proportionate to the likely significance of the environmental effects. The scoping process helps ensure proportionality.<br><br>
+<b>3. Completeness</b><br>
+The EIAR must address all relevant environmental factors as required by the EIA Directive (Article 3): population and human health, biodiversity, land, soil, water, air, climate, material assets, cultural heritage, and interactions between these.<br><br>
+<b>4. Transparency</b><br>
+All methodologies, data sources, assumptions and uncertainties must be clearly described so that readers can understand and evaluate the assessment.<br><br>
+<b>5. Scientific rigour and competence</b><br>
+The EIAR must be prepared by qualified experts with relevant experience.<br><br>
+<b>6. Worst-case approach</b><br>
+Where there is uncertainty in predicting impacts, the conservative (worst-case) scenario should be used to ensure adverse effects are not underestimated.<br><br>
+<b>7. Non-technical summary</b><br>
+A non-technical summary must be included in all EIARs, written in plain language accessible to the general public.<br><br>
+<b>8. Consideration of alternatives</b><br>
+Reasonable alternatives must have been considered and their environmental effects compared with the proposed project.<br><br>
+<b>9. Mitigation hierarchy</b><br>
+Impacts should first be avoided, then reduced, then remedied, then compensated as a last resort.`,
+  "eia_jun2324___Q1a": `<b>The Irish planning hierarchy</b><br><br>
+<b>Tier 1: National Planning Framework (NPF) — Project Ireland 2040</b><br>
+Prepared by: Department of Housing, Local Government and Heritage (Government level). Sets out the 20-year national strategic vision for spatial development across Ireland. Focuses on balanced regional development, compact growth, and sustainable places. All lower-tier plans must be consistent with the NPF.<br><br>
+<b>Tier 2: Regional Spatial and Economic Strategies (RSES)</b><br>
+Prepared by: Regional Assemblies (three in Ireland: Eastern and Midland, Southern, Northern and Western). Translates national NPF policy into a regional context. Sets regional growth targets, identifies key development centres, and provides strategic policies on housing, transport, economic development, and environment. Must be consistent with the NPF.<br><br>
+<b>Tier 3: County/City Development Plans</b><br>
+Prepared by: County and City Councils (every 6 years). The primary statutory land use plan at local level. Sets land use zoning objectives, development management standards, and policies for the county/city area. Must be consistent with the NPF and RSES. The development plan is the main document used in deciding planning applications.<br><br>
+<b>Tier 4: Local Area Plans (LAPs)</b><br>
+Prepared by: Local Authorities. Provides detailed planning framework for specific areas — typically towns, villages, or urban regeneration areas. Must be consistent with the County Development Plan. May include detailed zoning maps, design guidelines, and infrastructure requirements.<br><br>
+<b>How they work together:</b><br>
+The plans form a cascading hierarchy — each lower-tier plan must be consistent with those above it. This ensures national strategic priorities are translated through the regional and local planning system into individual development decisions.`,
+  "eia_jun2324___Q1b": `<b>The Irish planning hierarchy</b><br><br>
+<b>Tier 1: National Planning Framework (NPF) — Project Ireland 2040</b><br>
+Prepared by: Department of Housing, Local Government and Heritage (Government level). Sets out the 20-year national strategic vision for spatial development across Ireland. Focuses on balanced regional development, compact growth, and sustainable places. All lower-tier plans must be consistent with the NPF.<br><br>
+<b>Tier 2: Regional Spatial and Economic Strategies (RSES)</b><br>
+Prepared by: Regional Assemblies (three in Ireland: Eastern and Midland, Southern, Northern and Western). Translates national NPF policy into a regional context. Sets regional growth targets, identifies key development centres, and provides strategic policies on housing, transport, economic development, and environment. Must be consistent with the NPF.<br><br>
+<b>Tier 3: County/City Development Plans</b><br>
+Prepared by: County and City Councils (every 6 years). The primary statutory land use plan at local level. Sets land use zoning objectives, development management standards, and policies for the county/city area. Must be consistent with the NPF and RSES. The development plan is the main document used in deciding planning applications.<br><br>
+<b>Tier 4: Local Area Plans (LAPs)</b><br>
+Prepared by: Local Authorities. Provides detailed planning framework for specific areas — typically towns, villages, or urban regeneration areas. Must be consistent with the County Development Plan. May include detailed zoning maps, design guidelines, and infrastructure requirements.<br><br>
+<b>How they work together:</b><br>
+The plans form a cascading hierarchy — each lower-tier plan must be consistent with those above it. This ensures national strategic priorities are translated through the regional and local planning system into individual development decisions.`,
+  "eia_jun2324___Q1c": `The plans work together as a cascading hierarchy — each lower-tier plan must be consistent with the plans above it. This creates a coherent framework by translating national strategic objectives (from the NPF) through regional spatial strategies (RSES) into local land use plans (Development Plans and LAPs), ensuring that individual planning decisions at local level support national goals of compact growth, balanced regional development, climate action and sustainable places.`,
+  "eia_jun2324___Q2a": `<b>EIA vs EIAR — key distinction</b><br><br>
+<b>Environmental Impact Assessment (EIA)</b> is the process — a systematic procedure used to identify, describe, assess and evaluate the likely significant effects of a proposed project on the environment before development consent is given. It is a decision-making tool, not a document. The EIA process includes: screening, scoping, baseline data collection, impact prediction and evaluation, mitigation measure identification, preparation of the EIAR, public consultation, competent authority review, and post-authorisation monitoring.<br><br>
+<b>Environmental Impact Assessment Report (EIAR)</b> is the document — the written report prepared by or on behalf of the developer and submitted as part of the planning application. It contains all the information required under the EIA Directive and Irish Regulations, including: project description, alternatives considered, current state of the environment (baseline), assessment of likely significant effects, mitigation measures proposed, monitoring programme, and a non-technical summary.<br><br>
+<b>In summary:</b> The EIA is the overall process; the EIAR is one of the key outputs of that process. The EIAR is the document and the EIA is the procedure.`,
+  "eia_jun2324___Q2b": `<b>Stakeholders in the EIA process and their roles/interests</b><br><br>
+<b>1. Developer/applicant</b><br>
+Initiates the project; commissions and funds the EIAR; responsible for its accuracy, completeness and objectivity. Must engage with the competent authority in pre-application consultation and implement mitigation measures and monitoring as required.<br><br>
+<b>2. Competent Authority</b><br>
+Typically the local planning authority or An Bord Pleanála for strategic infrastructure. Receives and assesses the EIAR; consults with statutory bodies and the public; makes the planning decision; may impose conditions; ensures EIA procedural requirements are met.<br><br>
+<b>3. Statutory consultees</b><br>
+Bodies required by law to be consulted: EPA, National Parks and Wildlife Service (NPWS), Irish Water, Transport Infrastructure Ireland, Heritage Council, An Taisce, relevant local authorities. Their interest is in protecting environmental, biodiversity, heritage, water and infrastructure resources within their remit.<br><br>
+<b>4. The public and interest groups</b><br>
+Any member of the public has the right to inspect and make submissions on the EIAR during the public consultation period. Environmental NGOs and local community groups often participate actively to protect local environment, amenity and quality of life.<br><br>
+<b>5. EIA consultants and specialists</b><br>
+The multidisciplinary team that prepares the EIAR: ecologists, hydrologists, noise consultants, air quality specialists, archaeologists, traffic engineers. Their role is to provide objective expert assessment of impacts in their specialist area.`,
+  "eia_jun2324___Q2c": `<b>Screening and Scoping — two separate and distinct stages of EIA</b><br><br>
+<b>SCREENING</b><br>
+Screening is the first stage of the EIA process. Its purpose is to determine whether a proposed project requires an EIA at all.<br><br>
+How it works:<br>
+• <b>Annex I projects</b> (EIA Directive): always require EIA — large infrastructure projects such as motorways, airports, major industrial installations, large wind farms.<br>
+• <b>Annex II projects</b>: require case-by-case assessment examining size and scale; location (sensitivity of receiving environment); and nature of potential impacts.<br>
+• The competent authority issues a screening determination (EIA required or not). The developer may request a determination before submitting a planning application.<br><br>
+<b>SCOPING</b><br>
+Scoping determines what information needs to be included in the EIAR: which environmental topics, at what level of detail, and what methodologies to use.<br><br>
+How it works:<br>
+• Scoping is not mandatory in Ireland but is strongly recommended and widely used.<br>
+• The developer submits a scoping request to the competent authority.<br>
+• The competent authority consults with statutory bodies and issues a scoping opinion.<br>
+• A good scoping process ensures proportionality while ensuring all significant impacts are assessed.<br><br>
+<b>Key distinction:</b><br>
+Screening answers: "Is an EIA needed?" (in/out decision)<br>
+Scoping answers: "What should the EIAR contain?" (content/depth decision)<br>
+They are sequential — scoping only occurs after a decision that EIA is required.`,
+  "eia_jun2324___Q3": `<b>Alternatives in an EIAR</b><br><br>
+The EIA Directive (Article 5) requires the developer to include a description of the reasonable alternatives studied and the main reasons for the chosen option, taking into account the environmental effects.<br><br>
+<b>Types of alternatives that must be described:</b><br><br>
+<b>1. Site alternatives (location alternatives)</b><br>
+Different geographical locations for the project. Example: for a wind farm, alternative sites with lower visual impact or further from sensitive habitats.<br><br>
+<b>2. Design alternatives (layout/configuration alternatives)</b><br>
+Different physical layouts or configurations at the same site. Example: different treatment train layouts for a wastewater treatment plant.<br><br>
+<b>3. Process/technology alternatives</b><br>
+Different technologies to achieve the same objective. Example: different production technologies with different emission profiles.<br><br>
+<b>4. Scale alternatives</b><br>
+Different sizes or capacities. Example: a smaller wind farm with fewer turbines assessed against a larger one.<br><br>
+<b>5. The "do-nothing" alternative</b><br>
+The scenario where the project does not proceed — provides a baseline for measuring environmental effects of the project.<br><br>
+<b>Environmental comparison</b><br>
+Each alternative must be described and its environmental effects compared with the proposed project. The EIAR must explain the main reasons for selecting the chosen option on environmental grounds.<br><br>
+<b>Key point:</b> Only alternatives that are genuinely reasonable and technically feasible need to be considered.`,
+  "eia_jun2324___Q4": `<b>Project Description Requirements (Irish EPA Guidelines)</b><br><br>
+<b>1. Physical characteristics of the project</b><br>
+Describe the physical characteristics of the whole project including land use requirements during construction and operational phases. Include site location maps at appropriate scales, a site layout plan, and maps identifying the project in its broader context.<br><br>
+<b>2. Location of the project</b><br>
+Describe the geographical, environmental and human context of the project including sensitive areas in the vicinity (Natura 2000 sites, protected species habitats, flood zones, water bodies). Reference existing land uses on and adjacent to the site.<br><br>
+<b>3. Nature and amount of materials used</b><br>
+Describe the production processes, nature and quantity of materials used during construction and operation. Identify any hazardous materials stored or used on site.<br><br>
+<b>4. Expected residues and emissions</b><br>
+Provide estimates of the type and quantities of expected residues and emissions including: water (volumes, contaminants); air (dust, exhaust emissions); soil (contamination risk); noise and vibration; light and heat; waste volumes and disposal routes.<br><br>
+<b>5. Project phases</b><br>
+The description must cover all phases: pre-construction, construction, operation, and decommissioning/dismantling where relevant.<br><br>
+<b>6. Main alternatives considered</b><br>
+Include a brief reference to alternatives studied.<br><br>
+<b>7. Any permits or licences already in place</b><br>
+Reference any existing or simultaneously sought permits, licences or consents (e.g. EPA licence, foreshore licence, water discharge licence).`,
+  "energy_aug2223___Q1a": `Emissivity is the ability of a material's surface to emit (radiate) thermal energy compared to a perfect blackbody (emissivity=1.0). A surface with low emissivity (e.g. polished aluminium foil, low-e glass coatings) reflects most radiant heat back rather than emitting it. This is used in building construction to create radiant barriers and low-emissivity glazing that reduces heat loss by radiation. Absorptivity is the ability of a surface to absorb incident radiant energy. A surface with high absorptivity (e.g. dark-coloured materials) absorbs more solar radiation. A surface with low absorptivity (light-coloured or reflective surfaces) reflects more solar radiation. Both properties are relevant to passive solar design, roof coatings, glazing specifications, and the Urban Heat Island Effect.`,
+  "energy_aug2223___Q1b": `TRUE. The lower the U-value, the better the insulation properties. U-value (W/m²K) measures the rate of heat transfer through a building element — a lower U-value means less heat passes through per unit area per degree of temperature difference, indicating better insulation. A well-insulated wall might have a U-value of 0.15 W/m²K while a poorly insulated wall might be 0.8 W/m²K.`,
+  "energy_aug2223___Q1c": `Thermal conductivity (symbol: λ, lambda) is the measure of a material's ability to conduct or transfer heat through itself. It is expressed in units of W/mK (watts per metre kelvin). A low λ value indicates a poor heat conductor — and therefore a good thermal insulator. A high λ value indicates a good conductor — and a poor insulator. It is critically important in building energy design because it determines how much heat flows through walls, roofs, floors and windows. It is used to calculate the thermal resistance (R = d/λ) and ultimately the U-value of building elements. Selecting materials with low λ reduces heat loss and improves energy efficiency in accordance with Irish Building Regulations Part L.`,
+  "energy_aug2223___Q1d": `Degree days measure the cumulative temperature difference between outdoor temperature and a base temperature (typically 15.5°C in Ireland) over a period of time. A heating degree day (HDD) is recorded when the mean daily temperature falls below the base temperature. They are used in energy management to normalise a building's fuel consumption for variations in weather. By plotting actual fuel consumption against the number of degree days for corresponding periods, a regression line shows expected consumption. Deviations above this line indicate the heating system is using more fuel than expected — suggesting an efficiency problem, poor controls, or a change in occupancy or insulation. This allows like-for-like comparison of energy performance across different weather years.`,
+  "energy_aug2223___Q1e": `Three important pieces of information on an electricity bill beyond total cost: (1) Units consumed (kWh) and billing period — actual electricity consumption in kilowatt-hours with start and end meter readings. This is the primary data for energy monitoring and trend analysis. (2) Tariff structure and rates — unit rate(s) applied (day rate, night rate, peak rate for time-of-use tariffs), standing charge, and any Maximum Import Capacity (MIC) demand charges in kVA. Understanding the tariff is essential for identifying cost reduction opportunities such as load shifting to off-peak periods. (3) Public Service Obligation (PSO) levy, VAT and carbon tax — the PSO levy funds renewable energy and peat generation; carbon tax reflects the carbon content of fuel used in electricity generation. These affect total cost and are relevant to carbon footprint calculations.`,
+  "energy_aug2223___Q1f": `A Level II (Standard) audit involves detailed analysis of energy bills; on-site measurement of key systems (boilers, lighting, HVAC, compressed air); identification of energy conservation measures (ECMs) with initial cost-benefit analysis and payback periods; benchmarking against sector norms. It produces a report with ranked ECMs and is suitable for most commercial and industrial buildings. A Level III (Investment-grade) audit is the most rigorous level. It involves: detailed sub-metering and monitoring over time; sophisticated energy modelling (often computer-based); precise financial analysis with detailed costs, savings calculations, and financial metrics (NPV, IRR) to a standard acceptable to financial institutions. A Level III audit is required before committing to major capital investment and is used when significant expenditure must be justified to investors or lenders.`,
+  "energy_aug2223___Q1g": `Three advantages of avoiding exposure and prominence when siting a dwelling house: (1) Reduced wind-driven heat loss — a sheltered site significantly reduces heat loss from the building due to wind. Wind increases the effective U-value of building elements and causes infiltration of cold air. A well-sheltered site can reduce heating energy demand by 10–30%. (2) Reduced driving rain exposure — a sheltered site reduces wind-driven rain striking the building fabric, lowering the risk of water penetration, dampness, and deterioration of external materials. The Driving Rain Index is lower in sheltered locations. (3) Reduced structural wind loading — a sheltered site reduces wind pressure on the building structure, potentially allowing simpler and less costly structural specifications while also improving thermal comfort for occupants.`,
+  "energy_aug2223___Q1h": `Three other properties that a good insulating product should possess beyond thermal performance (low λ): (1) Moisture resistance / low water absorption — insulation that absorbs water loses much of its thermal performance (water conducts heat much better than air) and can cause dampness, mould, and structural damage. (2) Fire performance / non-combustibility — insulation must meet fire resistance requirements of Building Regulations (Part B). Products should be non-combustible or at minimum have adequate fire-retardant properties. (3) Dimensional stability and durability — the insulation must maintain its shape and thickness over the building lifetime. Compression or shrinkage reduces effectiveness. Must also be safe to handle during installation (non-toxic, non-irritant) and be environmentally sustainable/recyclable where possible.`,
+  "energy_aug2223___Q1i": `The Urban Heat Island (UHI) Effect is the phenomenon whereby urban areas experience significantly higher temperatures than surrounding rural areas — typically 2–5°C warmer. This occurs because: natural surfaces that cool through evapotranspiration are replaced with heat-absorbing surfaces (asphalt, concrete, dark rooftops); reduced tree cover means less shading and cooling; waste heat is released by vehicles, air conditioning units, and industrial processes; the urban canyon effect traps and re-radiates heat. Two ways to reduce the UHI effect: (1) Green roofs and walls, and urban tree planting — vegetation cools through evapotranspiration and provides shade, reducing surface temperatures. (2) High-albedo (light-coloured/reflective) road and roof surfaces — reflect more solar radiation rather than absorbing it, reducing surface and air temperatures.`,
+  "energy_aug2223___Q1j": `R(slate 20mm)=0.0909, R(PU 225mm)=9.0000, R(plasterboard 15mm)=0.0833. R_total=0.13+0.0909+9.0000+0.0833+0.04=9.3442 m²K/W. U=1/9.3442=<b>0.107 W/m²K</b>.`,
+  "energy_aug2223___Q2a": `<b>Energy audit process — three phases</b><br><br>
+<b>Phase 1: Pre-site visit activities</b><br>
+Agree scope, objectives and deliverables with the client; request and collect energy utility bills for minimum 2–3 years (electricity, gas, oil); request building plans, floor areas, equipment schedules, maintenance records, BMS data; begin preliminary energy data analysis; prepare audit checklists; arrange site access, H&S induction and brief the audit team; research sector benchmarks.<br><br>
+<b>Phase 2: Site visit activities</b><br>
+Walk-through survey of the entire facility; inspect building fabric (walls, roof, windows, doors — insulation, airtightness, thermal bridging); survey all energy-consuming systems: heating plant, HVAC, ventilation, lighting, compressed air, process equipment, hot water; read all meters; measure temperatures, power (clamp meter), airflows, luminance; interview facilities/maintenance staff; identify energy waste; take photographs and notes.<br><br>
+<b>Phase 3: Post-site visit activities</b><br>
+Analyse all data: calculate energy consumption by end-use (heating, lighting, process etc.); benchmark against similar facilities or sector norms (kWh/m², kWh per unit of production); identify and quantify energy conservation measures (ECMs); calculate estimated energy savings, cost savings, and simple payback period for each ECM; prioritise ECMs (no-cost/low-cost, medium cost, capital projects); prepare audit report with executive summary; present findings to management.<br><br>
+<b>Examples of ECMs identified:</b><br>
+Heating controls optimisation; weather compensation controls; insulation upgrades; LED lighting with occupancy sensors; variable speed drives on pumps and fans; compressed air leak detection; sub-metering installation; boiler replacement; solar PV installation.`,
+  "energy_aug2223___Q2b": `<b>Energy audit report — main headings and target audience</b><br><br>
+<b>Main headings:</b><br>
+1. Executive summary — key findings and top recommendations in non-technical language<br>
+2. Introduction and scope — purpose of audit, scope of work, limitations<br>
+3. Facility description — building/facility overview, occupancy, operational hours, energy systems<br>
+4. Energy data analysis — energy consumption and costs by fuel type and time period; trend analysis; degree day normalisation<br>
+5. Benchmarking — comparison with sector norms (kWh/m², specific energy consumption)<br>
+6. Site findings — key observations from site survey; identified energy waste and inefficiencies<br>
+7. Energy conservation measures (ECMs) — for each ECM: description, estimated annual energy and cost savings, implementation cost, simple payback period, priority ranking<br>
+8. Action plan — prioritised list with responsible persons and target completion dates<br>
+9. Conclusions and recommendations<br>
+10. Appendices — energy data tables, calculation details, photographs, meter readings, equipment lists<br><br>
+<b>Target audience:</b><br>
+The report serves two distinct audiences: Senior management/Board — the executive summary is written in non-technical language focusing on costs, savings potential, and return on investment. Decision-makers need financial justification, not technical detail. Facilities managers/energy managers/engineers — the technical sections provide detailed data, calculations, and specific equipment recommendations needed to implement identified measures.`,
+  "energy_aug2223___Q3": `<b>Green/sustainable building design for Irish dwelling houses</b><br><br>
+<b>1. Site suitability</b><br>
+Avoid exposed and prominent sites — sheltered sites reduce wind-driven heat loss, rain penetration and structural wind loading. Consider the Driving Rain Index (DRI): the west of Ireland has the highest DRI; construction details must account for this. South-facing slopes maximise solar gain opportunity.<br><br>
+<b>2. House design and orientation</b><br>
+South-facing orientation — principal living rooms and largest windows face south to maximise passive solar gain. Compact building form — minimise surface-area-to-volume ratio to reduce heat loss. Large south-facing glazing for solar gain; small north-facing windows to minimise heat loss. Thermal mass on south-facing walls absorbs daytime solar heat and releases it at night.<br><br>
+<b>3. Building practices</b><br>
+Airtightness — minimise uncontrolled air infiltration through careful detailing at junctions, penetrations and openings. NZEB standard requires ≤3 m³/hr/m² at 50 Pa. Thermal bridge elimination at wall/roof/floor junctions and around windows. Mechanical Ventilation with Heat Recovery (MVHR) provides fresh air while recovering 80–90% of heat from exhaust air.<br><br>
+<b>4. Building materials</b><br>
+High-performance insulation — polyurethane (λ=0.025), phenolic (λ=0.022) in walls, roofs and floors to achieve U-values required by Building Regulations Part L. Low-emissivity triple glazing reduces radiative heat loss. Sustainably sourced timber and recycled materials for low embodied energy.<br><br>
+<b>Irish legislation and standards:</b><br>
+Building Regulations Part L (Conservation of Fuel and Energy); Nearly Zero Energy Building (NZEB) standard — mandatory for new dwellings since 2021 (BER A2 rating, high insulation, airtightness, renewable energy contribution); Passive House standard — voluntary ultra-low-energy standard; BER (Building Energy Rating) system.`,
+  "energy_aug2223___Q4": `<b>Strategic energy management — energy data collection and assessment</b><br><br>
+<b>Types and sources of energy data:</b><br>
+Utility bills (electricity, gas, oil, LPG) — minimum 2–3 years for trend analysis; meter readings — main meters and any existing sub-meters; BMS/SCADA data — logs of temperatures, run times, energy consumption; fuel delivery records; production output data — units produced, floor area, degree days — for normalising consumption; degree day data from Met Éireann.<br><br>
+<b>Data assessment methods:</b><br>
+Energy consumption trending — plot consumption month-by-month and year-on-year to identify seasonal patterns and anomalies; regression analysis against degree days — establish expected consumption; deviations above the regression line indicate waste or system faults; energy intensity metrics — kWh/m², kWh per unit of production, kWh per employee; benchmarking against similar organisations using SEAI or CIBSE benchmark data; Sankey diagrams — visual representation of energy flows; Specific Energy Consumption (SEC) — total energy divided by a relevant output metric.<br><br>
+<b>Focus of on-site energy surveys:</b><br>
+Building fabric — insulation levels, airtightness, window performance, thermal bridges; heating plant — boiler efficiency, controls, distribution losses, heat recovery; lighting — type, age, controls (occupancy sensors, daylight dimming); HVAC — system sizing, controls, heat recovery, duct insulation; compressed air — pressure, leakage rate, demand profile; process equipment — motor efficiency, variable speed drives, standby loads; hot water — storage losses, distribution temperature, insulation.`,
+  "energy_aug2324___Q1a": `Thermal conductivity (symbol: λ, lambda) is the measure of a material's ability to conduct or transfer heat through itself. It is expressed in units of W/mK (watts per metre kelvin). A low λ value indicates a poor heat conductor — and therefore a good thermal insulator. A high λ value indicates a good conductor — and a poor insulator. It is critically important in building energy design because it determines how much heat flows through walls, roofs, floors and windows. It is used to calculate the thermal resistance (R = d/λ) and ultimately the U-value of building elements. Selecting materials with low λ reduces heat loss and improves energy efficiency in accordance with Irish Building Regulations Part L.`,
+  "energy_aug2324___Q1b": `Emissivity is the ability of a material's surface to emit (radiate) thermal energy compared to a perfect blackbody (emissivity=1.0). A surface with low emissivity (e.g. polished aluminium foil, low-e glass coatings) reflects most radiant heat back rather than emitting it. This is used in building construction to create radiant barriers and low-emissivity glazing that reduces heat loss by radiation. Absorptivity is the ability of a surface to absorb incident radiant energy. A surface with high absorptivity (e.g. dark-coloured materials) absorbs more solar radiation. A surface with low absorptivity (light-coloured or reflective surfaces) reflects more solar radiation. Both properties are relevant to passive solar design, roof coatings, glazing specifications, and the Urban Heat Island Effect.`,
+  "energy_aug2324___Q1c": `Three major disadvantages of Ireland's dependence on imported energy (over 80% of energy needs): (1) Energy security risk — Ireland is heavily dependent on a small number of suppliers and transit routes (primarily natural gas via the UK interconnector). Any disruption to supply poses a serious risk to energy supply continuity for homes, businesses and industry. (2) Economic vulnerability and cost exposure — import prices are set by international markets. Ireland has little control over these prices, making energy costs unpredictable and exposing the economy to price shocks. High import costs represent a significant outflow of money from the Irish economy. (3) Carbon emissions and climate obligations — imported fossil fuels contribute to Ireland's greenhouse gas emissions. Ireland has legally binding climate targets (Climate Action Plan, EU Fit for 55) and continued fossil fuel dependence makes meeting these targets more difficult and costly.`,
+  "energy_aug2324___Q1d": `Three phases from the six stages of a building's life cycle: (1) Raw material extraction — quarrying, mining, logging; (2) Material manufacture — cement, steel, glass, insulation production; (3) Construction/assembly — building the structure on site. Other phases are: operation and maintenance; renovation/refurbishment; demolition and disposal/recycling.`,
+  "energy_aug2324___Q1e": `R = d/λ = 0.2/0.025 = 8.0000 m²K/W. Including surface resistances (Rsi=0.13, Rso=0.04): R_total = 0.13 + 8.0000 + 0.04 = 8.1700 m²K/W. U = 1/8.1700 = <b>0.122 W/m²K</b>.`,
+  "energy_aug2324___Q1f": `FALSE. The higher the U-value, the WORSE its insulation properties. U-value measures thermal transmittance — a higher value means more heat passes through, indicating poor insulation. The correct statement is: the LOWER the U-value, the better its insulation properties.`,
+  "energy_aug2324___Q1g": `Three other properties that a good insulating product should possess beyond thermal performance (low λ): (1) Moisture resistance / low water absorption — insulation that absorbs water loses much of its thermal performance (water conducts heat much better than air) and can cause dampness, mould, and structural damage. (2) Fire performance / non-combustibility — insulation must meet fire resistance requirements of Building Regulations (Part B). Products should be non-combustible or at minimum have adequate fire-retardant properties. (3) Dimensional stability and durability — the insulation must maintain its shape and thickness over the building lifetime. Compression or shrinkage reduces effectiveness. Must also be safe to handle during installation (non-toxic, non-irritant) and be environmentally sustainable/recyclable where possible.`,
+  "energy_aug2324___Q1h": `Two building components with HIGH embodied energy: (1) Structural steel — very high temperatures required in blast furnace manufacture; significant CO₂ from coking coal. (2) Aluminium — very energy-intensive electrolytic refining; one of the highest embodied energy materials per kg used in construction (curtain walling, windows, cladding). One building component with LOW embodied energy: Sustainably sourced timber — trees sequester carbon during growth; sawing and processing requires relatively little energy compared to steel or concrete. Timber stores carbon for the life of the building.`,
+  "energy_aug2324___Q1i": `The Driving Rain Index (DRI) combines wind speed and rainfall to quantify the amount of rain driven against a vertical building surface. A higher DRI indicates greater exposure to wind-driven rain, increasing risk of water penetration, dampness, and heat loss. Where values are highest in Ireland: The west coast — particularly counties Galway, Mayo, Clare, Kerry, and west Cork (Connacht and west Munster) — due to prevailing south-westerly Atlantic winds bringing heavy rainfall from the Atlantic Ocean.`,
+  "energy_aug2324___Q1j": `R(plaster 15mm)=0.0833, R(inner block 100mm)=0.9091, R(PU 120mm)=4.8000, R(outer block 100mm)=0.9091, R(render 20mm)=0.1667. R_total=0.13+0.0833+0.9091+4.8000+0.9091+0.1667+0.04=7.0382 m²K/W. U=1/7.0382=<b>0.142 W/m²K</b>.`,
+  "energy_aug2324___Q2a": `<b>Urban Heat Island (UHI) Effect and reduction methods</b><br><br>
+The Urban Heat Island Effect is the phenomenon whereby urban areas are significantly warmer than surrounding rural countryside — typically 2–5°C higher air temperatures.<br><br>
+Causes: Replacement of natural surfaces with impermeable heat-absorbing materials (dark asphalt, rooftops, concrete) that absorb solar radiation and re-radiate it as heat at night; reduced evapotranspiration (fewer plants); urban canyon effect trapping re-radiated heat; waste heat from vehicles, air conditioning and industry.<br><br>
+Methods to reduce the UHI Effect:<br>
+Green roofs and living walls — vegetation increases evapotranspiration and shading, reducing surface temperatures significantly. Urban tree planting and parks — provide shade, evapotranspiration cooling, and habitat. High-albedo (cool) road and roof surfaces — using light-coloured or reflective materials that reflect more solar radiation. Cool pavements — permeable pavements allow water infiltration and evaporation. Water features and blue infrastructure — fountains, ponds, and canals cool surrounding air through evaporation. Reducing vehicle emissions and waste heat — promotion of active travel, public transport and electrification. Building orientation and urban planning — designing streets and building layouts to maximise air flow through the urban area.`,
+  "energy_aug2324___Q2b": `<b>Green/sustainable building design for Irish dwelling houses</b><br><br>
+<b>1. Site suitability</b><br>
+Avoid exposed and prominent sites — sheltered sites reduce wind-driven heat loss, rain penetration and structural wind loading. Consider the Driving Rain Index (DRI): the west of Ireland has the highest DRI; construction details must account for this. South-facing slopes maximise solar gain opportunity.<br><br>
+<b>2. House design and orientation</b><br>
+South-facing orientation — principal living rooms and largest windows face south to maximise passive solar gain. Compact building form — minimise surface-area-to-volume ratio to reduce heat loss. Large south-facing glazing for solar gain; small north-facing windows to minimise heat loss. Thermal mass on south-facing walls absorbs daytime solar heat and releases it at night.<br><br>
+<b>3. Building practices</b><br>
+Airtightness — minimise uncontrolled air infiltration through careful detailing at junctions, penetrations and openings. NZEB standard requires ≤3 m³/hr/m² at 50 Pa. Thermal bridge elimination at wall/roof/floor junctions and around windows. Mechanical Ventilation with Heat Recovery (MVHR) provides fresh air while recovering 80–90% of heat from exhaust air.<br><br>
+<b>4. Building materials</b><br>
+High-performance insulation — polyurethane (λ=0.025), phenolic (λ=0.022) in walls, roofs and floors to achieve U-values required by Building Regulations Part L. Low-emissivity triple glazing reduces radiative heat loss. Sustainably sourced timber and recycled materials for low embodied energy.<br><br>
+<b>Irish legislation and standards:</b><br>
+Building Regulations Part L (Conservation of Fuel and Energy); Nearly Zero Energy Building (NZEB) standard — mandatory for new dwellings since 2021 (BER A2 rating, high insulation, airtightness, renewable energy contribution); Passive House standard — voluntary ultra-low-energy standard; BER (Building Energy Rating) system.`,
+  "energy_aug2324___Q3a": `<b>Energy audit process — three phases</b><br><br>
+<b>Phase 1: Pre-site visit activities</b><br>
+Agree scope, objectives and deliverables with the client; request and collect energy utility bills for minimum 2–3 years (electricity, gas, oil); request building plans, floor areas, equipment schedules, maintenance records, BMS data; begin preliminary energy data analysis; prepare audit checklists; arrange site access, H&S induction and brief the audit team; research sector benchmarks.<br><br>
+<b>Phase 2: Site visit activities</b><br>
+Walk-through survey of the entire facility; inspect building fabric (walls, roof, windows, doors — insulation, airtightness, thermal bridging); survey all energy-consuming systems: heating plant, HVAC, ventilation, lighting, compressed air, process equipment, hot water; read all meters; measure temperatures, power (clamp meter), airflows, luminance; interview facilities/maintenance staff; identify energy waste; take photographs and notes.<br><br>
+<b>Phase 3: Post-site visit activities</b><br>
+Analyse all data: calculate energy consumption by end-use (heating, lighting, process etc.); benchmark against similar facilities or sector norms (kWh/m², kWh per unit of production); identify and quantify energy conservation measures (ECMs); calculate estimated energy savings, cost savings, and simple payback period for each ECM; prioritise ECMs (no-cost/low-cost, medium cost, capital projects); prepare audit report with executive summary; present findings to management.<br><br>
+<b>Examples of ECMs identified:</b><br>
+Heating controls optimisation; weather compensation controls; insulation upgrades; LED lighting with occupancy sensors; variable speed drives on pumps and fans; compressed air leak detection; sub-metering installation; boiler replacement; solar PV installation.`,
+  "energy_aug2324___Q3b": `<b>Energy audit report — main headings and target audience</b><br><br>
+<b>Main headings:</b><br>
+1. Executive summary — key findings and top recommendations in non-technical language<br>
+2. Introduction and scope — purpose of audit, scope of work, limitations<br>
+3. Facility description — building/facility overview, occupancy, operational hours, energy systems<br>
+4. Energy data analysis — energy consumption and costs by fuel type and time period; trend analysis; degree day normalisation<br>
+5. Benchmarking — comparison with sector norms (kWh/m², specific energy consumption)<br>
+6. Site findings — key observations from site survey; identified energy waste and inefficiencies<br>
+7. Energy conservation measures (ECMs) — for each ECM: description, estimated annual energy and cost savings, implementation cost, simple payback period, priority ranking<br>
+8. Action plan — prioritised list with responsible persons and target completion dates<br>
+9. Conclusions and recommendations<br>
+10. Appendices — energy data tables, calculation details, photographs, meter readings, equipment lists<br><br>
+<b>Target audience:</b><br>
+The report serves two distinct audiences: Senior management/Board — the executive summary is written in non-technical language focusing on costs, savings potential, and return on investment. Decision-makers need financial justification, not technical detail. Facilities managers/energy managers/engineers — the technical sections provide detailed data, calculations, and specific equipment recommendations needed to implement identified measures.`,
+  "energy_aug2324___Q4": `<b>Strategic energy management — energy data collection and assessment</b><br><br>
+<b>Types and sources of energy data:</b><br>
+Utility bills (electricity, gas, oil, LPG) — minimum 2–3 years for trend analysis; meter readings — main meters and any existing sub-meters; BMS/SCADA data — logs of temperatures, run times, energy consumption; fuel delivery records; production output data — units produced, floor area, degree days — for normalising consumption; degree day data from Met Éireann.<br><br>
+<b>Data assessment methods:</b><br>
+Energy consumption trending — plot consumption month-by-month and year-on-year to identify seasonal patterns and anomalies; regression analysis against degree days — establish expected consumption; deviations above the regression line indicate waste or system faults; energy intensity metrics — kWh/m², kWh per unit of production, kWh per employee; benchmarking against similar organisations using SEAI or CIBSE benchmark data; Sankey diagrams — visual representation of energy flows; Specific Energy Consumption (SEC) — total energy divided by a relevant output metric.<br><br>
+<b>Focus of on-site energy surveys:</b><br>
+Building fabric — insulation levels, airtightness, window performance, thermal bridges; heating plant — boiler efficiency, controls, distribution losses, heat recovery; lighting — type, age, controls (occupancy sensors, daylight dimming); HVAC — system sizing, controls, heat recovery, duct insulation; compressed air — pressure, leakage rate, demand profile; process equipment — motor efficiency, variable speed drives, standby loads; hot water — storage losses, distribution temperature, insulation.`,
+  "energy_jun2223___Q1a": `Thermal conductivity (symbol: λ, lambda) is the measure of a material's ability to conduct or transfer heat through itself. It is expressed in units of W/mK (watts per metre kelvin). A low λ value indicates a poor heat conductor — and therefore a good thermal insulator. A high λ value indicates a good conductor — and a poor insulator. It is critically important in building energy design because it determines how much heat flows through walls, roofs, floors and windows. It is used to calculate the thermal resistance (R = d/λ) and ultimately the U-value of building elements. Selecting materials with low λ reduces heat loss and improves energy efficiency in accordance with Irish Building Regulations Part L.`,
+  "energy_jun2223___Q1b": `R = d/λ = 0.15/0.022 = 6.8182 m²K/W. Including surface resistances (Rsi=0.13, Rso=0.04): R_total = 0.13 + 6.8182 + 0.04 = 6.9882 m²K/W. U = 1/6.9882 = <b>0.143 W/m²K</b>.`,
+  "energy_jun2223___Q1c": `Emissivity is the ability of a material's surface to emit (radiate) thermal energy compared to a perfect blackbody (emissivity=1.0). A surface with low emissivity (e.g. polished aluminium foil, low-e glass coatings) reflects most radiant heat back rather than emitting it. This is used in building construction to create radiant barriers and low-emissivity glazing that reduces heat loss by radiation. Absorptivity is the ability of a surface to absorb incident radiant energy. A surface with high absorptivity (e.g. dark-coloured materials) absorbs more solar radiation. A surface with low absorptivity (light-coloured or reflective surfaces) reflects more solar radiation. Both properties are relevant to passive solar design, roof coatings, glazing specifications, and the Urban Heat Island Effect.`,
+  "energy_jun2223___Q1d": `Degree days measure the cumulative temperature difference between outdoor temperature and a base temperature (typically 15.5°C in Ireland) over a period of time. A heating degree day (HDD) is recorded when the mean daily temperature falls below the base temperature. They are used in energy management to normalise a building's fuel consumption for variations in weather. By plotting actual fuel consumption against the number of degree days for corresponding periods, a regression line shows expected consumption. Deviations above this line indicate the heating system is using more fuel than expected — suggesting an efficiency problem, poor controls, or a change in occupancy or insulation. This allows like-for-like comparison of energy performance across different weather years.`,
+  "energy_jun2223___Q1e": `Three advantages of avoiding exposure and prominence when siting a dwelling house: (1) Reduced wind-driven heat loss — a sheltered site significantly reduces heat loss from the building due to wind. Wind increases the effective U-value of building elements and causes infiltration of cold air. A well-sheltered site can reduce heating energy demand by 10–30%. (2) Reduced driving rain exposure — a sheltered site reduces wind-driven rain striking the building fabric, lowering the risk of water penetration, dampness, and deterioration of external materials. The Driving Rain Index is lower in sheltered locations. (3) Reduced structural wind loading — a sheltered site reduces wind pressure on the building structure, potentially allowing simpler and less costly structural specifications while also improving thermal comfort for occupants.`,
+  "energy_jun2223___Q1f": `A Level II (Standard) audit involves detailed analysis of energy bills; on-site measurement of key systems (boilers, lighting, HVAC, compressed air); identification of energy conservation measures (ECMs) with initial cost-benefit analysis and payback periods; benchmarking against sector norms. It produces a report with ranked ECMs and is suitable for most commercial and industrial buildings. A Level III (Investment-grade) audit is the most rigorous level. It involves: detailed sub-metering and monitoring over time; sophisticated energy modelling (often computer-based); precise financial analysis with detailed costs, savings calculations, and financial metrics (NPV, IRR) to a standard acceptable to financial institutions. A Level III audit is required before committing to major capital investment and is used when significant expenditure must be justified to investors or lenders.`,
+  "energy_jun2223___Q1g": `Three tasks to carry out before the site visit in a standard energy audit: (1) Agree scope and objectives with the client — understand what the audit needs to achieve, the facility type, the energy systems in place, and any specific areas of concern. Agree the deliverables and report format. (2) Collect and review historical energy data — request at least 2–3 years of utility bills (electricity, gas, oil) and any available sub-meter data. Begin analysis of consumption trends, unit costs, and standing charges to identify anomalies and focus areas for the site survey. (3) Review building documentation — obtain site plans, equipment schedules, BMS data, maintenance records, and any previous energy audits. Understanding the building before the visit allows the audit team to plan the site survey effectively and ask targeted questions of staff.`,
+  "energy_jun2223___Q1h": `Three important pieces of information on an electricity bill beyond total cost: (1) Units consumed (kWh) and billing period — actual electricity consumption in kilowatt-hours with start and end meter readings. This is the primary data for energy monitoring and trend analysis. (2) Tariff structure and rates — unit rate(s) applied (day rate, night rate, peak rate for time-of-use tariffs), standing charge, and any Maximum Import Capacity (MIC) demand charges in kVA. Understanding the tariff is essential for identifying cost reduction opportunities such as load shifting to off-peak periods. (3) Public Service Obligation (PSO) levy, VAT and carbon tax — the PSO levy funds renewable energy and peat generation; carbon tax reflects the carbon content of fuel used in electricity generation. These affect total cost and are relevant to carbon footprint calculations.`,
+  "energy_jun2223___Q1i": `The Urban Heat Island (UHI) Effect is the phenomenon whereby urban areas experience significantly higher temperatures than surrounding rural areas — typically 2–5°C warmer. This occurs because: natural surfaces that cool through evapotranspiration are replaced with heat-absorbing surfaces (asphalt, concrete, dark rooftops); reduced tree cover means less shading and cooling; waste heat is released by vehicles, air conditioning units, and industrial processes; the urban canyon effect traps and re-radiates heat. Two ways to reduce the UHI effect: (1) Green roofs and walls, and urban tree planting — vegetation cools through evapotranspiration and provides shade, reducing surface temperatures. (2) High-albedo (light-coloured/reflective) road and roof surfaces — reflect more solar radiation rather than absorbing it, reducing surface and air temperatures.`,
+  "energy_jun2223___Q1j": `R(concrete 100mm)=0.4545, R(bead 120mm)=5.4545, R(aerated 100mm)=1.0526. R_total=0.13+0.4545+5.4545+1.0526+0.04=7.1317 m²K/W. U=1/7.1317=<b>0.140 W/m²K</b>.`,
+  "energy_jun2223___Q2": `<b>Green/sustainable building design for Irish dwelling houses</b><br><br>
+<b>1. Site suitability</b><br>
+Avoid exposed and prominent sites — sheltered sites reduce wind-driven heat loss, rain penetration and structural wind loading. Consider the Driving Rain Index (DRI): the west of Ireland has the highest DRI; construction details must account for this. South-facing slopes maximise solar gain opportunity.<br><br>
+<b>2. House design and orientation</b><br>
+South-facing orientation — principal living rooms and largest windows face south to maximise passive solar gain. Compact building form — minimise surface-area-to-volume ratio to reduce heat loss. Large south-facing glazing for solar gain; small north-facing windows to minimise heat loss. Thermal mass on south-facing walls absorbs daytime solar heat and releases it at night.<br><br>
+<b>3. Building practices</b><br>
+Airtightness — minimise uncontrolled air infiltration through careful detailing at junctions, penetrations and openings. NZEB standard requires ≤3 m³/hr/m² at 50 Pa. Thermal bridge elimination at wall/roof/floor junctions and around windows. Mechanical Ventilation with Heat Recovery (MVHR) provides fresh air while recovering 80–90% of heat from exhaust air.<br><br>
+<b>4. Building materials</b><br>
+High-performance insulation — polyurethane (λ=0.025), phenolic (λ=0.022) in walls, roofs and floors to achieve U-values required by Building Regulations Part L. Low-emissivity triple glazing reduces radiative heat loss. Sustainably sourced timber and recycled materials for low embodied energy.<br><br>
+<b>Irish legislation and standards:</b><br>
+Building Regulations Part L (Conservation of Fuel and Energy); Nearly Zero Energy Building (NZEB) standard — mandatory for new dwellings since 2021 (BER A2 rating, high insulation, airtightness, renewable energy contribution); Passive House standard — voluntary ultra-low-energy standard; BER (Building Energy Rating) system.`,
+  "energy_jun2223___Q3": `<b>Energy audit process — three phases</b><br><br>
+<b>Phase 1: Pre-site visit activities</b><br>
+Agree scope, objectives and deliverables with the client; request and collect energy utility bills for minimum 2–3 years (electricity, gas, oil); request building plans, floor areas, equipment schedules, maintenance records, BMS data; begin preliminary energy data analysis; prepare audit checklists; arrange site access, H&S induction and brief the audit team; research sector benchmarks.<br><br>
+<b>Phase 2: Site visit activities</b><br>
+Walk-through survey of the entire facility; inspect building fabric (walls, roof, windows, doors — insulation, airtightness, thermal bridging); survey all energy-consuming systems: heating plant, HVAC, ventilation, lighting, compressed air, process equipment, hot water; read all meters; measure temperatures, power (clamp meter), airflows, luminance; interview facilities/maintenance staff; identify energy waste; take photographs and notes.<br><br>
+<b>Phase 3: Post-site visit activities</b><br>
+Analyse all data: calculate energy consumption by end-use (heating, lighting, process etc.); benchmark against similar facilities or sector norms (kWh/m², kWh per unit of production); identify and quantify energy conservation measures (ECMs); calculate estimated energy savings, cost savings, and simple payback period for each ECM; prioritise ECMs (no-cost/low-cost, medium cost, capital projects); prepare audit report with executive summary; present findings to management.<br><br>
+<b>Examples of ECMs identified:</b><br>
+Heating controls optimisation; weather compensation controls; insulation upgrades; LED lighting with occupancy sensors; variable speed drives on pumps and fans; compressed air leak detection; sub-metering installation; boiler replacement; solar PV installation.`,
+  "energy_jun2223___Q4a": `<b>Strategic energy management — energy data collection and assessment</b><br><br>
+<b>Types and sources of energy data:</b><br>
+Utility bills (electricity, gas, oil, LPG) — minimum 2–3 years for trend analysis; meter readings — main meters and any existing sub-meters; BMS/SCADA data — logs of temperatures, run times, energy consumption; fuel delivery records; production output data — units produced, floor area, degree days — for normalising consumption; degree day data from Met Éireann.<br><br>
+<b>Data assessment methods:</b><br>
+Energy consumption trending — plot consumption month-by-month and year-on-year to identify seasonal patterns and anomalies; regression analysis against degree days — establish expected consumption; deviations above the regression line indicate waste or system faults; energy intensity metrics — kWh/m², kWh per unit of production, kWh per employee; benchmarking against similar organisations using SEAI or CIBSE benchmark data; Sankey diagrams — visual representation of energy flows; Specific Energy Consumption (SEC) — total energy divided by a relevant output metric.<br><br>
+<b>Focus of on-site energy surveys:</b><br>
+Building fabric — insulation levels, airtightness, window performance, thermal bridges; heating plant — boiler efficiency, controls, distribution losses, heat recovery; lighting — type, age, controls (occupancy sensors, daylight dimming); HVAC — system sizing, controls, heat recovery, duct insulation; compressed air — pressure, leakage rate, demand profile; process equipment — motor efficiency, variable speed drives, standby loads; hot water — storage losses, distribution temperature, insulation.`,
+  "energy_jun2223___Q4b": `<b>Strategic energy management — energy data collection and assessment</b><br><br>
+<b>Types and sources of energy data:</b><br>
+Utility bills (electricity, gas, oil, LPG) — minimum 2–3 years for trend analysis; meter readings — main meters and any existing sub-meters; BMS/SCADA data — logs of temperatures, run times, energy consumption; fuel delivery records; production output data — units produced, floor area, degree days — for normalising consumption; degree day data from Met Éireann.<br><br>
+<b>Data assessment methods:</b><br>
+Energy consumption trending — plot consumption month-by-month and year-on-year to identify seasonal patterns and anomalies; regression analysis against degree days — establish expected consumption; deviations above the regression line indicate waste or system faults; energy intensity metrics — kWh/m², kWh per unit of production, kWh per employee; benchmarking against similar organisations using SEAI or CIBSE benchmark data; Sankey diagrams — visual representation of energy flows; Specific Energy Consumption (SEC) — total energy divided by a relevant output metric.<br><br>
+<b>Focus of on-site energy surveys:</b><br>
+Building fabric — insulation levels, airtightness, window performance, thermal bridges; heating plant — boiler efficiency, controls, distribution losses, heat recovery; lighting — type, age, controls (occupancy sensors, daylight dimming); HVAC — system sizing, controls, heat recovery, duct insulation; compressed air — pressure, leakage rate, demand profile; process equipment — motor efficiency, variable speed drives, standby loads; hot water — storage losses, distribution temperature, insulation.`,
+  "energy_jun2223___Q4c": `<b>Strategic energy management — energy management action plans</b><br><br>
+An energy management action plan translates audit findings into a structured programme of improvements.<br><br>
+<b>Contents:</b><br>
+Prioritised list of energy conservation measures (ECMs) ranked by payback period and/or impact. For each ECM: description; estimated annual energy saving (kWh); estimated annual cost saving (€); implementation cost (€); simple payback period (years); responsible person/department; target completion date. Short-term actions (no/low cost): optimise heating controls, repair compressed air leaks, install sub-meters, staff awareness campaigns (payback < 1 year). Medium-term actions (moderate capital): LED lighting, insulation improvements, timer controls (payback 1–5 years). Long-term/capital actions: boiler replacement, renewable energy (solar PV/thermal), building envelope retrofit (payback 5+ years). KPIs to measure progress: kWh/m², kWh/unit, CO₂ emissions, energy cost as % of turnover. Review dates and monitoring schedule.<br><br>
+<b>ISO 50001 Energy Management System (EnMS):</b><br>
+An action plan is a central requirement of ISO 50001. The standard follows the Plan-Do-Check-Act (PDCA) cycle — the action plan is the Plan element. An ISO 50001-certified EnMS provides a systematic framework for continuously improving energy performance and demonstrates commitment to energy management.`,
+  "energy_jun2324___Q1a": `The three modes of heat transfer are: (1) Conduction — heat transfer through a solid material by direct molecular contact and vibration. Rate is governed by the material's thermal conductivity (λ). (2) Convection — heat transfer through the movement of a fluid (air or liquid). Natural convection occurs when warm air rises and cool air falls; forced convection uses fans or pumps. (3) Radiation — heat transfer by electromagnetic waves (infrared radiation), which can travel through a vacuum. All objects emit radiation based on their temperature and emissivity. Buildings lose heat through all three mechanisms — insulation reduces conduction, draught-proofing reduces convection, and low-emissivity glazing reduces radiation losses.`,
+  "energy_jun2324___Q1b": `R = d/λ = 0.125/0.025 = 5.0000 m²K/W. Including surface resistances (Rsi=0.13, Rso=0.04): R_total = 0.13 + 5.0000 + 0.04 = 5.1700 m²K/W. U = 1/5.1700 = <b>0.193 W/m²K</b>.`,
+  "energy_jun2324___Q1c": `Three items to bring on a site visit for a standard energy audit: (1) Clamp meter/power analyser — measures actual electrical power consumption (kW) of individual circuits, equipment or motors. Essential for verifying rated vs actual power. (2) Thermometer/thermal imaging camera — measures surface and air temperatures to identify thermal bridges, areas of heat loss, uninsulated pipes. A thermal imaging camera provides a rapid visual survey of the building envelope. (3) Lux meter — measures illuminance levels (lux) to assess whether lighting levels are appropriate and identify reduction opportunities. Other useful equipment: anemometer (air speed in ducts), ultrasonic leak detector (compressed air leaks), CO₂ meter (ventilation adequacy), data logger.`,
+  "energy_jun2324___Q1d": `TRUE. The lower the U-value, the better the insulation properties. U-value measures thermal transmittance — a lower value means less heat passes through the element. This statement is CORRECT.`,
+  "energy_jun2324___Q1e": `The Driving Rain Index (DRI) combines mean annual wind speed (m/s) with mean annual rainfall (mm) to indicate the intensity of rain driven against a vertical surface. A higher DRI means greater exposure to driving rain, increasing the risk of rain penetration through walls. This affects wall construction design — areas of high DRI may require rendered external walls, wider cavities, or more durable finishes. Where values are highest in Ireland: The west coast — particularly Galway, Mayo, Kerry, Clare, and west Cork (Connacht and west Munster) — due to prevailing south-westerly Atlantic winds.`,
+  "energy_jun2324___Q1f": `Three other properties that a good insulating product should possess beyond thermal performance (low λ): (1) Moisture resistance / low water absorption — insulation that absorbs water loses much of its thermal performance (water conducts heat much better than air) and can cause dampness, mould, and structural damage. (2) Fire performance / non-combustibility — insulation must meet fire resistance requirements of Building Regulations (Part B). Products should be non-combustible or at minimum have adequate fire-retardant properties. (3) Dimensional stability and durability — the insulation must maintain its shape and thickness over the building lifetime. Compression or shrinkage reduces effectiveness. Must also be safe to handle during installation (non-toxic, non-irritant) and be environmentally sustainable/recyclable where possible.`,
+  "energy_jun2324___Q1g": `Three important pieces of information on an electricity bill beyond total cost: (1) Units consumed (kWh) and billing period — actual electricity consumption in kilowatt-hours with start and end meter readings. This is the primary data for energy monitoring and trend analysis. (2) Tariff structure and rates — unit rate(s) applied (day rate, night rate, peak rate for time-of-use tariffs), standing charge, and any Maximum Import Capacity (MIC) demand charges in kVA. Understanding the tariff is essential for identifying cost reduction opportunities such as load shifting to off-peak periods. (3) Public Service Obligation (PSO) levy, VAT and carbon tax — the PSO levy funds renewable energy and peat generation; carbon tax reflects the carbon content of fuel used in electricity generation. These affect total cost and are relevant to carbon footprint calculations.`,
+  "energy_jun2324___Q1h": `The optimum orientation for a solar panel in Ireland to maximise annual energy yield is: South-facing (true south, 180° azimuth), with a tilt angle of approximately 30–35° from the horizontal. This captures the most solar radiation on an annual basis given Ireland's latitude (~51–55°N). A due south orientation maximises exposure during winter months when the sun is low in the sky. In practice, orientations within ±30° of due south with tilt angles between 20° and 50° still perform well. East or west-facing panels produce approximately 15–20% less annual energy than optimally oriented south-facing panels.`,
+  "energy_jun2324___Q1i": `The Urban Heat Island (UHI) Effect is the phenomenon whereby urban areas experience significantly higher temperatures than surrounding rural areas — typically 2–5°C warmer. This occurs because: natural surfaces that cool through evapotranspiration are replaced with heat-absorbing surfaces (asphalt, concrete, dark rooftops); reduced tree cover means less shading and cooling; waste heat is released by vehicles, air conditioning units, and industrial processes; the urban canyon effect traps and re-radiates heat. Two ways to reduce the UHI effect: (1) Green roofs and walls, and urban tree planting — vegetation cools through evapotranspiration and provides shade, reducing surface temperatures. (2) High-albedo (light-coloured/reflective) road and roof surfaces — reflect more solar radiation rather than absorbing it, reducing surface and air temperatures.`,
+  "energy_jun2324___Q1j": `R(slate 20mm)=0.0909, R(PU 175mm)=7.0000, R(plasterboard 15mm)=0.0833. R_total=0.13+0.0909+7.0000+0.0833+0.04=7.3442 m²K/W. U=1/7.3442=<b>0.136 W/m²K</b>.`,
+  "energy_jun2324___Q2a": `<b>Stages in the life cycle of a typical building</b><br><br>
+1. Raw material extraction — extraction of primary materials from the earth (quarrying stone/aggregate, mining metals, logging timber, oil refining for plastics). Often energy-intensive for high embodied-energy materials.<br><br>
+2. Material manufacture — processing raw materials into building products (cement production, steel rolling, brick firing, glass manufacture, insulation production). Cement and steel manufacture are major sources of CO₂.<br><br>
+3. Construction/assembly — transport of materials to site, site preparation, construction. Energy for plant and machinery, worker transport, and waste generation.<br><br>
+4. Operation and maintenance — typically the longest phase (50–100+ years). Energy for heating, cooling, ventilation, lighting, hot water, and appliances. Regular maintenance and replacement of components.<br><br>
+5. Renovation/refurbishment — periodic major upgrades to building fabric and systems. Energy and materials consumed in the process.<br><br>
+6. Demolition and disposal/recycling — deconstruction at end of life; transport and disposal or recycling. High embodied energy materials like steel can be recycled efficiently; concrete can be crushed and reused as aggregate.<br><br>
+Note: As operational energy use decreases due to improved insulation and renewables, embodied energy in materials becomes a proportionally larger share of a building's lifetime carbon footprint.`,
+  "energy_jun2324___Q2b": `<b>Green/sustainable building design for Irish dwelling houses</b><br><br>
+<b>1. Site suitability</b><br>
+Avoid exposed and prominent sites — sheltered sites reduce wind-driven heat loss, rain penetration and structural wind loading. Consider the Driving Rain Index (DRI): the west of Ireland has the highest DRI; construction details must account for this. South-facing slopes maximise solar gain opportunity.<br><br>
+<b>2. House design and orientation</b><br>
+South-facing orientation — principal living rooms and largest windows face south to maximise passive solar gain. Compact building form — minimise surface-area-to-volume ratio to reduce heat loss. Large south-facing glazing for solar gain; small north-facing windows to minimise heat loss. Thermal mass on south-facing walls absorbs daytime solar heat and releases it at night.<br><br>
+<b>3. Building practices</b><br>
+Airtightness — minimise uncontrolled air infiltration through careful detailing at junctions, penetrations and openings. NZEB standard requires ≤3 m³/hr/m² at 50 Pa. Thermal bridge elimination at wall/roof/floor junctions and around windows. Mechanical Ventilation with Heat Recovery (MVHR) provides fresh air while recovering 80–90% of heat from exhaust air.<br><br>
+<b>4. Building materials</b><br>
+High-performance insulation — polyurethane (λ=0.025), phenolic (λ=0.022) in walls, roofs and floors to achieve U-values required by Building Regulations Part L. Low-emissivity triple glazing reduces radiative heat loss. Sustainably sourced timber and recycled materials for low embodied energy.<br><br>
+<b>Irish legislation and standards:</b><br>
+Building Regulations Part L (Conservation of Fuel and Energy); Nearly Zero Energy Building (NZEB) standard — mandatory for new dwellings since 2021 (BER A2 rating, high insulation, airtightness, renewable energy contribution); Passive House standard — voluntary ultra-low-energy standard; BER (Building Energy Rating) system.`,
+  "energy_jun2324___Q3a": `<b>Energy audit process — three phases</b><br><br>
+<b>Phase 1: Pre-site visit activities</b><br>
+Agree scope, objectives and deliverables with the client; request and collect energy utility bills for minimum 2–3 years (electricity, gas, oil); request building plans, floor areas, equipment schedules, maintenance records, BMS data; begin preliminary energy data analysis; prepare audit checklists; arrange site access, H&S induction and brief the audit team; research sector benchmarks.<br><br>
+<b>Phase 2: Site visit activities</b><br>
+Walk-through survey of the entire facility; inspect building fabric (walls, roof, windows, doors — insulation, airtightness, thermal bridging); survey all energy-consuming systems: heating plant, HVAC, ventilation, lighting, compressed air, process equipment, hot water; read all meters; measure temperatures, power (clamp meter), airflows, luminance; interview facilities/maintenance staff; identify energy waste; take photographs and notes.<br><br>
+<b>Phase 3: Post-site visit activities</b><br>
+Analyse all data: calculate energy consumption by end-use (heating, lighting, process etc.); benchmark against similar facilities or sector norms (kWh/m², kWh per unit of production); identify and quantify energy conservation measures (ECMs); calculate estimated energy savings, cost savings, and simple payback period for each ECM; prioritise ECMs (no-cost/low-cost, medium cost, capital projects); prepare audit report with executive summary; present findings to management.<br><br>
+<b>Examples of ECMs identified:</b><br>
+Heating controls optimisation; weather compensation controls; insulation upgrades; LED lighting with occupancy sensors; variable speed drives on pumps and fans; compressed air leak detection; sub-metering installation; boiler replacement; solar PV installation.`,
+  "energy_jun2324___Q3b": `<b>Energy audit report — main headings and target audience</b><br><br>
+<b>Main headings:</b><br>
+1. Executive summary — key findings and top recommendations in non-technical language<br>
+2. Introduction and scope — purpose of audit, scope of work, limitations<br>
+3. Facility description — building/facility overview, occupancy, operational hours, energy systems<br>
+4. Energy data analysis — energy consumption and costs by fuel type and time period; trend analysis; degree day normalisation<br>
+5. Benchmarking — comparison with sector norms (kWh/m², specific energy consumption)<br>
+6. Site findings — key observations from site survey; identified energy waste and inefficiencies<br>
+7. Energy conservation measures (ECMs) — for each ECM: description, estimated annual energy and cost savings, implementation cost, simple payback period, priority ranking<br>
+8. Action plan — prioritised list with responsible persons and target completion dates<br>
+9. Conclusions and recommendations<br>
+10. Appendices — energy data tables, calculation details, photographs, meter readings, equipment lists<br><br>
+<b>Target audience:</b><br>
+The report serves two distinct audiences: Senior management/Board — the executive summary is written in non-technical language focusing on costs, savings potential, and return on investment. Decision-makers need financial justification, not technical detail. Facilities managers/energy managers/engineers — the technical sections provide detailed data, calculations, and specific equipment recommendations needed to implement identified measures.`,
+  "energy_jun2324___Q4a": `<b>Strategic energy management — energy data collection and assessment</b><br><br>
+<b>Types and sources of energy data:</b><br>
+Utility bills (electricity, gas, oil, LPG) — minimum 2–3 years for trend analysis; meter readings — main meters and any existing sub-meters; BMS/SCADA data — logs of temperatures, run times, energy consumption; fuel delivery records; production output data — units produced, floor area, degree days — for normalising consumption; degree day data from Met Éireann.<br><br>
+<b>Data assessment methods:</b><br>
+Energy consumption trending — plot consumption month-by-month and year-on-year to identify seasonal patterns and anomalies; regression analysis against degree days — establish expected consumption; deviations above the regression line indicate waste or system faults; energy intensity metrics — kWh/m², kWh per unit of production, kWh per employee; benchmarking against similar organisations using SEAI or CIBSE benchmark data; Sankey diagrams — visual representation of energy flows; Specific Energy Consumption (SEC) — total energy divided by a relevant output metric.<br><br>
+<b>Focus of on-site energy surveys:</b><br>
+Building fabric — insulation levels, airtightness, window performance, thermal bridges; heating plant — boiler efficiency, controls, distribution losses, heat recovery; lighting — type, age, controls (occupancy sensors, daylight dimming); HVAC — system sizing, controls, heat recovery, duct insulation; compressed air — pressure, leakage rate, demand profile; process equipment — motor efficiency, variable speed drives, standby loads; hot water — storage losses, distribution temperature, insulation.`,
+  "energy_jun2324___Q4b": `<b>Strategic energy management — energy data collection and assessment</b><br><br>
+<b>Types and sources of energy data:</b><br>
+Utility bills (electricity, gas, oil, LPG) — minimum 2–3 years for trend analysis; meter readings — main meters and any existing sub-meters; BMS/SCADA data — logs of temperatures, run times, energy consumption; fuel delivery records; production output data — units produced, floor area, degree days — for normalising consumption; degree day data from Met Éireann.<br><br>
+<b>Data assessment methods:</b><br>
+Energy consumption trending — plot consumption month-by-month and year-on-year to identify seasonal patterns and anomalies; regression analysis against degree days — establish expected consumption; deviations above the regression line indicate waste or system faults; energy intensity metrics — kWh/m², kWh per unit of production, kWh per employee; benchmarking against similar organisations using SEAI or CIBSE benchmark data; Sankey diagrams — visual representation of energy flows; Specific Energy Consumption (SEC) — total energy divided by a relevant output metric.<br><br>
+<b>Focus of on-site energy surveys:</b><br>
+Building fabric — insulation levels, airtightness, window performance, thermal bridges; heating plant — boiler efficiency, controls, distribution losses, heat recovery; lighting — type, age, controls (occupancy sensors, daylight dimming); HVAC — system sizing, controls, heat recovery, duct insulation; compressed air — pressure, leakage rate, demand profile; process equipment — motor efficiency, variable speed drives, standby loads; hot water — storage losses, distribution temperature, insulation.`,
+  "energy_jun2324___Q4c": `<b>Strategic energy management — energy management action plans</b><br><br>
+An energy management action plan translates audit findings into a structured programme of improvements.<br><br>
+<b>Contents:</b><br>
+Prioritised list of energy conservation measures (ECMs) ranked by payback period and/or impact. For each ECM: description; estimated annual energy saving (kWh); estimated annual cost saving (€); implementation cost (€); simple payback period (years); responsible person/department; target completion date. Short-term actions (no/low cost): optimise heating controls, repair compressed air leaks, install sub-meters, staff awareness campaigns (payback < 1 year). Medium-term actions (moderate capital): LED lighting, insulation improvements, timer controls (payback 1–5 years). Long-term/capital actions: boiler replacement, renewable energy (solar PV/thermal), building envelope retrofit (payback 5+ years). KPIs to measure progress: kWh/m², kWh/unit, CO₂ emissions, energy cost as % of turnover. Review dates and monitoring schedule.<br><br>
+<b>ISO 50001 Energy Management System (EnMS):</b><br>
+An action plan is a central requirement of ISO 50001. The standard follows the Plan-Do-Check-Act (PDCA) cycle — the action plan is the Plan element. An ISO 50001-certified EnMS provides a systematic framework for continuously improving energy performance and demonstrates commitment to energy management.`,
+  "water_aug2324___Q1a": `Key constituents in domestic wastewater posing a threat to surface water and groundwater quality: (1) Pathogens — bacteria (E. coli, Salmonella), viruses (norovirus, hepatitis A), and protozoa (Cryptosporidium, Giardia). These can cause serious waterborne disease if they reach drinking water sources or bathing waters. (2) Nutrients — nitrogen (ammonium/nitrate) and phosphorus (phosphate). In surface waters these cause eutrophication (algal blooms, oxygen depletion, fish kills). Nitrate in groundwater can cause methaemoglobinaemia in infants if drinking water standards are exceeded. (3) Biochemical Oxygen Demand (BOD)/organic matter — dissolved organic matter exerts an oxygen demand in receiving water bodies, potentially causing severe oxygen depletion and killing aquatic life. (4) Suspended solids — smothers riverbed habitats, reduces light penetration, and carries adsorbed pathogens and nutrients.`,
+  "water_aug2324___Q1b": `Site characteristics increasing groundwater vulnerability to contamination from a septic tank: (1) Shallow depth to bedrock — reduces unsaturated soil depth available for filtration and biological treatment before effluent reaches groundwater. EPA Code of Practice requires minimum 1.0m unsaturated subsoil. (2) Karst or fissured limestone bedrock — allows rapid preferential flow directly to groundwater through open fissures, conduits and caves, bypassing soil treatment entirely. Much of west and midlands Ireland is underlain by karst limestone. (3) High seasonal water table — reduces the unsaturated zone below the percolation trench. (4) Highly permeable soils (gravels, sands, coarse glaciofluvial deposits) — effluent passes through rapidly with insufficient contact time for treatment. (5) Proximity to groundwater abstraction points — reduces travel time for contaminated groundwater to reach a water supply well.`,
+  "water_aug2324___Q1c": `<b>Percolation test — purpose and method</b><br><br>
+<b>Purpose:</b> To assess the soil's ability to absorb and treat effluent from a septic tank system. The result (T-value) determines whether soil permeability is within the acceptable range for a conventional subsurface percolation bed.<br><br>
+<b>Method (EPA Code of Practice):</b><br>
+1. A test hole is dug or bored to the proposed depth of the percolation trench. Minimum dimensions: 300mm × 300mm × 300mm deep.<br>
+2. The test hole is filled with water and left to soak (pre-soak) — this saturates the soil and represents realistic conditions after rain.<br>
+3. The hole is refilled with water to a set depth (typically 300mm). The time (in minutes) for the water level to fall 25mm is measured and recorded. This is repeated until consistent readings are obtained. The result is the T-value (minutes per 25mm fall).<br>
+4. The T-value is assessed: acceptable range for a standard subsurface percolation bed is T = 3 to 50 minutes. T &lt; 3 = too permeable; T &gt; 50 = too impermeable.<br><br>
+A trial pit inspection is also required to assess depth to bedrock and seasonal high water table (minimum 1.0m unsaturated zone required).`,
+  "water_aug2324___Q1d": `A secondary packaged wastewater treatment system is a pre-manufactured, compact unit providing biological secondary treatment of septic tank effluent (or raw wastewater directly). Unlike a conventional septic tank + percolation bed, biological treatment occurs within the unit itself rather than in the soil. These systems produce significantly higher quality effluent and are used where soil percolation test results (T-value) are outside the acceptable range, where the water table is too high, or where bedrock is too shallow. The effluent still typically requires a soil polishing area, but a smaller one. One example: An Aerobic Treatment Unit (ATU) — uses forced aeration to create aerobic conditions within the treatment vessel, supporting aerobic bacterial breakdown of organic matter. Examples include rotating biological contactors (RBCs) and sequencing batch reactors (SBRs).`,
+  "water_aug2324___Q2a": `The preliminary treatment stage is the first stage of the treatment process. Its purpose is to remove gross solids, grit, and other large materials that could damage downstream equipment (pumps, pipework) or interfere with treatment processes. It includes: (1) Screening — coarse and fine screens (bar screens, band screens) remove rags, plastics, paper, wipes and other solid debris from incoming wastewater. Screenings are compacted and sent to landfill or incineration. (2) Grit removal — grit channels or vortex units slow down the flow, allowing heavy inorganic particles (sand, grit, gravel) to settle by gravity. Grit is washed and sent to landfill. (3) Fat, oil and grease (FOG) separation — flotation or skimming removes FOG. Preliminary treatment does not significantly reduce BOD or suspended solids — it simply protects downstream equipment and improves efficiency of subsequent treatment.`,
+  "water_aug2324___Q2b": `<b>Activated sludge process — secondary treatment</b><br><br>
+The activated sludge process uses a mixed community of micro-organisms (bacteria, protozoa) in suspension to biologically degrade dissolved and colloidal organic matter (BOD) from settled wastewater (primary effluent).<br><br>
+<b>Process description:</b><br>
+1. Primary effluent enters the aeration basin (reaction tank) containing dense suspension of micro-organisms — the activated sludge — at typically 2,000–5,000 mg/L MLSS (mixed liquor suspended solids).<br>
+2. Oxygen is supplied by surface aerators or fine-bubble diffusers. Aerobic conditions allow bacteria to metabolise and oxidise organic matter, producing CO₂, water and new bacterial biomass. Aeration also keeps sludge in suspension.<br>
+3. Mixed liquor flows to secondary settlement tank (secondary clarifier) where activated sludge flocs settle under gravity, producing a clear treated effluent above.<br>
+4. Settled sludge is divided into: (a) Return activated sludge (RAS) — pumped back to aeration basin to maintain microbial population; (b) Waste activated sludge (WAS) — excess sludge removed to prevent MLSS building up too high. WAS goes to the sludge treatment stream.<br>
+5. Clarified effluent passes to tertiary treatment or is discharged.`,
+  "water_aug2324___Q2c": `Foaming in activated sludge reaction tank: Cause: Most commonly caused by proliferation of filamentous bacteria (particularly Microthrix parvicella and Nocardia spp.) within the mixed liquor. These organisms have hydrophobic cell surfaces that stabilise air bubbles, creating a persistent brown/grey foam on the aeration basin and secondary clarifier surfaces. Foaming can also be caused by surfactants/detergents in the influent wastewater, or by very low dissolved oxygen conditions. Two control techniques: (1) Water/effluent sprays — fine water sprays directed at the foam surface break up foam bubbles mechanically. This is a short-term control measure. (2) Chlorination of return sludge — addition of chlorine to the return activated sludge to selectively kill and reduce the population of filamentous organisms. Also: adjusting the sludge retention time (SRT) — reducing SRT can wash out slow-growing filamentous organisms.`,
+  "water_aug2324___Q2d": `One pathogenic microorganism resistant to chlorination: Cryptosporidium parvum (protozoan parasite). Cryptosporidium forms environmentally resistant oocysts. The thick oocyst wall protects the organism from chlorine penetration at normal contact times and doses used in wastewater treatment. One alternative treatment technique: UV irradiation — UV light damages the DNA of Cryptosporidium oocysts, preventing them from reproducing and causing infection. UV is the most effective disinfection method against Cryptosporidium and is used to supplement chlorination in tertiary treatment where Cryptosporidium is a concern.`,
+  "water_aug2324___Q3a": `Alkaline stabilisation (lime stabilisation): Quick lime (CaO) or hydrated lime (Ca(OH)₂) is added to sludge in sufficient quantity to raise the pH to ≥12 and maintain it for a specified contact time (minimum 2 hours). The high alkaline conditions kill pathogenic micro-organisms and inhibit further biological decomposition, stabilising the sludge and eliminating odours temporarily. The lime addition results in an exothermic reaction that further raises temperature, contributing to pathogen destruction. One benefit: Simple, low-cost process requiring relatively simple equipment. Effective pathogen reduction to standards required for agricultural application. One disadvantage: Does not reduce volume or mass of sludge — lime addition actually increases mass significantly. The stabilising effect is temporary — if pH falls below 11 over time (due to carbonation), biological activity can resume and odours develop. Sludge should be applied to agricultural land promptly after treatment.`,
+  "water_aug2324___Q3b": `<b>Anaerobic digestion — key stages and outputs</b><br><br>
+Anaerobic digestion (AD) is the biological breakdown of organic matter (sludge) in the absence of oxygen by a community of micro-organisms. Carried out in sealed, heated digester vessels (typically mesophilic: 35°C, or thermophilic: 55°C).<br><br>
+<b>Four-stage process:</b><br><br>
+1. Hydrolysis — complex organic polymers (proteins, fats, carbohydrates) broken down into simpler soluble monomers (amino acids, fatty acids, sugars) by hydrolytic bacteria. Often the rate-limiting step.<br><br>
+2. Acidogenesis (fermentation) — soluble monomers converted by fermentative bacteria into volatile fatty acids (VFAs — acetic, propionic, butyric acids), alcohols, hydrogen gas (H₂), and carbon dioxide (CO₂).<br><br>
+3. Acetogenesis — acetogenic bacteria convert longer-chain VFAs and alcohols into acetic acid (acetate), hydrogen (H₂), and CO₂. These are the direct substrates for methane production.<br><br>
+4. Methanogenesis — methanogenic archaea (strict anaerobes) convert acetate and H₂/CO₂ into methane (CH₄) and CO₂. This is the final stage producing the biogas.<br><br>
+<b>Key outputs:</b><br>
+Biogas — approximately 60–70% methane (CH₄) and 30–40% CO₂. Captured and used to generate heat and electricity via combined heat and power (CHP) units. Surplus electricity can be exported to the grid.<br>
+Digestate — the stabilised residue. Has significantly reduced volatile solids content (40–60% reduction), reduced pathogens, and reduced odour compared to raw sludge. Further processed (dewatered, dried) and may be applied to agricultural land as biosolids if meeting quality standards.`,
+  "water_aug2324___Q3c": `Two adverse impacts of applying treated sludge to agricultural land and mitigation measures: (1) Pathogen contamination — treated sludge may still contain residual pathogenic micro-organisms depending on treatment level. Application can result in contamination of soil, crops, surface water and groundwater, posing risks to human and animal health. Mitigation: Ensure sludge meets pathogen reduction standards; apply exclusion periods between application and crop harvest/animal grazing; maintain minimum distances from watercourses and drinking water wells; incorporate into soil rather than surface application. (2) Nutrient overloading (eutrophication and nitrate leaching) — excessive application adds nitrogen and phosphorus beyond the agronomic requirement of the crop. Surplus nitrogen leaches as nitrate into groundwater and excess phosphorus can cause eutrophication of rivers and lakes. Mitigation: Calculate and respect agronomic application rates based on soil testing; observe closed periods for application; avoid application on saturated, frozen or flooded ground; maintain exclusion zones near watercourses.`,
+  "water_aug2324___Q4a": `The European Communities (Drinking Water) Regulations 2023 (S.I. No. 99 of 2023) is the primary legislation in Ireland for the protection of drinking water quality, implementing EU Drinking Water Directive 2020/2184/EU. These set parametric values (quality standards) for microbiological, chemical and indicator parameters in drinking water, require water suppliers to monitor quality, report results, and take corrective action when standards are not met.`,
+  "water_aug2324___Q4b": `The depth of the intake point must be carefully assessed because water quality varies significantly with depth in rivers and stratified lakes/reservoirs. In lakes and reservoirs: Thermal stratification during summer creates distinct layers — warm, well-oxygenated surface water (epilimnion) and cool, oxygen-depleted deep water (hypolimnion). The hypolimnion in summer can have high concentrations of dissolved iron and manganese (released from bed sediments under anoxic conditions), elevated CO₂, hydrogen sulphide, and taste/odour compounds. Abstracting from too deep a level in summer introduces these problematic constituents to the treatment plant. Near-surface abstraction during algal bloom periods (warm, calm weather) can draw in high concentrations of cyanobacteria (blue-green algae) and associated cyanotoxins, which are very difficult to treat and hazardous to health. Therefore: Many abstraction facilities have adjustable intake structures at multiple depths, allowing operators to select the optimal depth seasonally or in response to monitoring data.`,
+  "water_aug2324___Q4c": `<b>Drinking water treatment stages and their purpose</b><br><br>
+<b>1. Abstraction</b><br>
+Raw water is taken from a surface water source (river, lake, reservoir) or groundwater source (borehole). Surface water typically requires more extensive treatment due to susceptibility to turbidity, colour, pathogens, and algae.<br><br>
+<b>2. Screening</b><br>
+Coarse screens remove large debris (leaves, branches, litter) that could damage pumps and downstream equipment.<br><br>
+<b>3. Coagulation</b><br>
+A coagulant (aluminium sulphate/alum or ferric sulphate) is added to the raw water. The coagulant destabilises colloidal particles (clay, silt, colour-causing humic substances, micro-organisms) by neutralising their negative surface charges so they can come together.<br><br>
+<b>4. Flocculation</b><br>
+Destabilised particles are gently mixed (slow stirring) allowing them to aggregate into larger, visible flocs (clumps of particles). Polymer flocculants may be added to strengthen floc structure.<br><br>
+<b>5. Clarification (settlement or DAF)</b><br>
+Flocs are removed by: (a) Gravity sedimentation — flocs settle to the bottom of settlement tanks, producing a sludge that is removed; or (b) Dissolved Air Flotation (DAF) — air bubbles attach to flocs and float them to the surface where they are skimmed off. Clarification removes turbidity, colour, suspended solids, and significantly reduces micro-organisms including Cryptosporidium oocysts.<br><br>
+<b>6. Filtration</b><br>
+Water passes through rapid gravity sand filters or dual-media filters to remove residual floc, turbidity, and micro-organisms. Membrane filtration provides an absolute barrier against micro-organisms.<br><br>
+<b>7. Disinfection</b><br>
+Kills residual pathogenic micro-organisms. Common methods: (a) Chlorination — most widely used; provides a residual disinfectant in the distribution network; not effective against Cryptosporidium; (b) UV irradiation — effective against Cryptosporidium; no residual; (c) Ozonation — effective against pathogens; no residual. Chloramination may be used for residual in large distribution networks.<br><br>
+<b>8. pH correction</b><br>
+pH adjusted (typically by adding lime or carbon dioxide) to reduce corrosivity to pipes and ensure stability of disinfectant residual.<br><br>
+<b>9. Fluoridation</b><br>
+In Ireland, fluoride is added to achieve 0.6 mg/L for dental health purposes.<br><br>
+<b>10. Distribution</b><br>
+Treated water is pumped to service reservoirs and distributed through the pipe network.`,
+  "water_aug2425___Q1a": `The septic tank provides primary treatment. Wastewater enters the tank where physical separation and limited anaerobic biological treatment occurs. Solids settle to form a sludge layer; lighter materials (fats, grease) float forming a scum layer; clarified wastewater (supernatant) occupies the middle layer. The tank retains solids which undergo partial anaerobic decomposition, while the clarified effluent passes to the percolation bed. Accumulated sludge must be desludged regularly (every 1–3 years) to prevent overflow into the percolation bed. The percolation bed provides secondary biological and physical treatment of the clarified effluent. Effluent is distributed through perforated pipes into trenches filled with gravel in the soil. As effluent percolates through unsaturated soil, micro-organisms biologically degrade residual organic matter (BOD), physical filtration removes suspended solids and pathogens, and the soil matrix adsorbs and removes further pathogens and nutrients.`,
+  "water_aug2425___Q1b": `The Water Services (Amendment) Act 2012 is the primary legislation in Ireland for the regulation of the operation and maintenance of domestic septic tank systems. It introduced a mandatory national registration system for all domestic wastewater treatment systems and established a risk-based inspection programme administered by local authorities. Owners must register their system and ensure it is properly maintained and in good working order. Failure to register or comply with an enforcement notice can result in prosecution.`,
+  "water_aug2425___Q1c": `Planning permission should NOT be granted. Three reasons: (1) T-value >120 minutes — far outside the acceptable range of 3–50 minutes for a conventional subsurface percolation bed. T-value >120 indicates soil far too impermeable for effluent to percolate effectively, leading to waterlogging of trenches, surfacing of effluent, and possible backflow into the dwelling. Not suitable for a conventional percolation bed. (2) Water table at 0.5m below ground level — EPA Code of Practice requires a minimum of 1.0m of unsaturated soil between the base of the percolation trench and the seasonal high water table. 0.5m is far too shallow to meet this requirement. Saturated conditions in the percolation bed prevent adequate treatment. (3) 100m from adjacent river — while this exceeds the minimum 25m separation distance, given the combined failure criteria (impermeable soil and very high water table), the risk of untreated effluent reaching the river is very high, particularly through surface runoff or lateral movement through near-surface soil. Overall the site is not suitable for a conventional septic tank system. An alternative system (packaged wastewater treatment system or constructed wetland) should be considered, subject to further site assessment.`,
+  "water_aug2425___Q1d": `The most common reason for septic tank malfunction in Ireland is failure to desludge (empty) the tank at regular intervals. When not desludged, accumulated sludge gradually rises within the tank until it reaches the outlet pipe level, and then begins to overflow into the percolation bed. Sludge rapidly clogs the percolation trenches and surrounding soil, preventing effluent draining away. The percolation bed becomes waterlogged and blocked, causing the system to fail completely — resulting in surfacing of sewage on the ground or backflow into the dwelling. Resolution: In the short term, the septic tank must be professionally desludged immediately to remove accumulated sludge. If sludge has entered the percolation bed over a long period, the bed may need replacement. The homeowner should establish a regular desludging schedule (every 1–3 years depending on household size and tank capacity) and have the system inspected periodically.`,
+  "water_aug2425___Q2a": `<b>Fixed film systems (trickling filters) — design, operation and disadvantages</b><br><br>
+<b>Basis of design:</b><br>
+A trickling filter consists of a circular or rectangular bed of media (traditionally crushed rock; modern systems use plastic media with high specific surface area ~100–200 m²/m³) over which settled wastewater is distributed by rotating distributor arms. The media provides a large surface area on which a biofilm of micro-organisms develops.<br><br>
+<b>Treatment process:</b><br>
+1. Settled wastewater from primary treatment is pumped to the rotating distributor at the top of the filter.<br>
+2. As wastewater trickles down through the media, organic matter is adsorbed onto and degraded by micro-organisms in the biofilm.<br>
+3. The process is aerobic — air passes naturally through the void spaces in the media by natural ventilation.<br>
+4. Periodically, parts of the biofilm detach (sloughing) as biofilm thickness exceeds oxygen penetration depth.<br>
+5. Sloughed material (humus) passes to a humus tank (secondary settlement tank) where it settles and is removed as secondary sludge.<br>
+6. Treated effluent may be recirculated to the distributor to dilute strong influent or improve treatment efficiency.<br><br>
+<b>Two disadvantages of fixed film systems:</b><br>
+1. Fly (psychoda/filter fly) infestation — the warm, moist biofilm is ideal habitat for filter flies (Psychoda spp.). Large numbers of small flies can emerge and cause nuisance to the local area.<br>
+2. Less operational flexibility than activated sludge — it is more difficult to respond to changes in influent load or quality. Performance is more affected by cold weather and the biological population cannot be rapidly adjusted.`,
+  "water_aug2425___Q2b": `Chlorination for disinfection in the tertiary stage — pros and cons: Pros: (1) Effective against most pathogenic bacteria and many viruses at normal operational doses and contact times. (2) Residual disinfection — chlorine provides a measurable residual in treated effluent, which can prevent re-contamination and can be continuously monitored as a process control parameter. (3) Well-established, mature technology with low equipment costs and widely available operational expertise. Cons: (1) Not effective against Cryptosporidium oocysts — highly resistant to chlorine at normal operational doses. UV irradiation is required to address this pathogen. (2) Formation of disinfection by-products (DBPs) — chlorine reacts with organic matter in the effluent to form potentially harmful by-products including trihalomethanes (THMs) and haloacetic acids (HAAs), some of which are suspected carcinogens. Particular concern if the receiving water body is used for drinking water abstraction. (3) Toxicity to aquatic organisms — residual chlorine in discharged effluent can be toxic to fish and other aquatic organisms. Dechlorination (sodium bisulphite or sodium thiosulphate) may be required before discharge.`,
+  "water_aug2425___Q2c": `The main piece of EU legislation for the regulation of urban wastewater treatment plants is Council Directive 91/271/EEC concerning urban wastewater treatment (the Urban Wastewater Treatment Directive, UWTD). This requires member states to ensure that urban wastewater from agglomerations above specified size thresholds receives appropriate treatment before discharge — ranging from secondary treatment for smaller agglomerations to more stringent tertiary treatment (nutrient removal) for larger agglomerations discharging to sensitive areas. The Directive has been revised and recast as Directive 2024/3019/EU of the European Parliament and of the Council.`,
+  "water_aug2425___Q3a": `The purpose of sludge thickening is to reduce the volume of sludge by increasing its dry solids content. Untreated sludge typically contains only 0.5–2% dry solids (more than 98% water). Reducing water content (thickening) before further treatment significantly reduces the volume processed in subsequent stages (digestion, dewatering, drying), reducing equipment size and operating costs and the cost of transport and disposal. One example — Gravity thickening: Sludge is pumped into a circular gravity thickener where solids settle to the bottom under gravity and are raked to a central sump from which thickened sludge is withdrawn. The clarified supernatant liquor returns to the treatment process. Gravity thickening is a simple, low-energy process effective for primary sludge, typically achieving 4–8% dry solids.`,
+  "water_aug2425___Q3b": `Alkaline stabilisation (lime stabilisation): Quick lime (CaO) or hydrated lime (Ca(OH)₂) is added to sludge in sufficient quantity to raise the pH to ≥12 and maintain it for a specified contact time (minimum 2 hours). The high alkaline conditions kill pathogenic micro-organisms and inhibit further biological decomposition, stabilising the sludge and eliminating odours temporarily. The lime addition results in an exothermic reaction that further raises temperature, contributing to pathogen destruction. One benefit: Simple, low-cost process requiring relatively simple equipment. Effective pathogen reduction to standards required for agricultural application. One disadvantage: Does not reduce volume or mass of sludge — lime addition actually increases mass significantly. The stabilising effect is temporary — if pH falls below 11 over time (due to carbonation), biological activity can resume and odours develop. Sludge should be applied to agricultural land promptly after treatment.`,
+  "water_aug2425___Q3c": `<b>Anaerobic digestion — key stages and outputs</b><br><br>
+Anaerobic digestion (AD) is the biological breakdown of organic matter (sludge) in the absence of oxygen by a community of micro-organisms. Carried out in sealed, heated digester vessels (typically mesophilic: 35°C, or thermophilic: 55°C).<br><br>
+<b>Four-stage process:</b><br><br>
+1. Hydrolysis — complex organic polymers (proteins, fats, carbohydrates) broken down into simpler soluble monomers (amino acids, fatty acids, sugars) by hydrolytic bacteria. Often the rate-limiting step.<br><br>
+2. Acidogenesis (fermentation) — soluble monomers converted by fermentative bacteria into volatile fatty acids (VFAs — acetic, propionic, butyric acids), alcohols, hydrogen gas (H₂), and carbon dioxide (CO₂).<br><br>
+3. Acetogenesis — acetogenic bacteria convert longer-chain VFAs and alcohols into acetic acid (acetate), hydrogen (H₂), and CO₂. These are the direct substrates for methane production.<br><br>
+4. Methanogenesis — methanogenic archaea (strict anaerobes) convert acetate and H₂/CO₂ into methane (CH₄) and CO₂. This is the final stage producing the biogas.<br><br>
+<b>Key outputs:</b><br>
+Biogas — approximately 60–70% methane (CH₄) and 30–40% CO₂. Captured and used to generate heat and electricity via combined heat and power (CHP) units. Surplus electricity can be exported to the grid.<br>
+Digestate — the stabilised residue. Has significantly reduced volatile solids content (40–60% reduction), reduced pathogens, and reduced odour compared to raw sludge. Further processed (dewatered, dried) and may be applied to agricultural land as biosolids if meeting quality standards.`,
+  "water_aug2425___Q3d": `One piece of legislation: The European Communities (Use of Sewage Sludge in Agriculture) Regulations 1998 (S.I. No. 148 of 1998), implementing EU Sewage Sludge Directive 86/278/EEC in Ireland.`,
+  "water_aug2425___Q4a": `Purpose of the four stages: (1) Coagulation — a coagulant (aluminium sulphate/alum or ferric sulphate) is added to raw water to destabilise the colloidal particles (clay, silt, colour-causing humic substances, micro-organisms) suspended in the water. These particles carry negative surface charges that repel each other keeping them in suspension. The coagulant neutralises these charges, allowing particles to come together. (2) Flocculation — destabilised particles are gently mixed (slow stirring) encouraging collisions between particles, allowing them to aggregate together into larger visible clumps called flocs. Polymer flocculants may be added to strengthen floc structure. (3) Clarification — flocs are separated from water by: (a) Gravity sedimentation — flocs settle to bottom of settlement tanks under gravity producing a sludge that is removed; or (b) Dissolved Air Flotation (DAF) — microscopic air bubbles attach to flocs and float them to the surface where they are skimmed off. Clarification removes turbidity, colour, suspended solids, and significantly reduces micro-organisms including Cryptosporidium oocysts. (4) Filtration — water passes through rapid gravity sand filters or dual-media filters (sand and anthracite) to remove residual floc, turbidity, and micro-organisms not removed by clarification. Provides an additional physical barrier before disinfection.`,
+  "water_aug2425___Q4b": `<b>Protecting drinking water supplies from Cryptosporidium</b><br><br>
+Cryptosporidium is a protozoan parasite that forms environmentally resistant oocysts. It is highly resistant to conventional chlorine disinfection at normal doses, making it a major challenge in drinking water treatment.<br><br>
+<b>Approaches used:</b><br><br>
+1. Optimised coagulation, flocculation and clarification (physical removal)<br>
+Coagulation and flocculation aggregate Cryptosporidium oocysts into flocs along with suspended solids. These flocs are then removed by sedimentation or dissolved air flotation (DAF). Optimising coagulant dose and mixing conditions (jar testing) maximises oocyst removal. Effective coagulation and clarification can achieve 1–3 log removal of oocysts.<br><br>
+2. Filtration (physical barrier)<br>
+Rapid gravity sand filtration or dual-media filtration physically strains oocysts from the water. Membrane filtration (ultrafiltration or nanofiltration) provides an absolute physical barrier. Additional 2–4 log removal.<br><br>
+3. UV irradiation (primary disinfection barrier)<br>
+UV light at doses of ≥40 mJ/cm² damages the DNA of Cryptosporidium oocysts, preventing them from reproducing and causing infection. UV is the most effective disinfection method against Cryptosporidium and is now the standard primary disinfection barrier in Irish drinking water treatment plants. Provides 3+ log inactivation.<br><br>
+4. Catchment management<br>
+Reducing oocyst load entering the raw water source: controlling livestock access to watercourses; managing land use to reduce agricultural runoff; monitoring raw water for oocyst counts.<br><br>
+5. Source water monitoring<br>
+Regular monitoring of raw water allows treatment plants to increase treatment intensity during high-risk periods (e.g. after heavy rainfall events).`,
+  "water_aug2425___Q4c": `The European Communities (Drinking Water) Regulations 2023 is the piece of legislation in place in Ireland for the protection of drinking water quality.`,
+  "water_jan2324___Q1a": `The Water Services (Amendment) Act 2012 is the primary legislation in Ireland for the regulation of the operation and maintenance of domestic septic tank systems. It introduced a mandatory national registration system for all domestic wastewater treatment systems and established a risk-based inspection programme administered by local authorities. Owners must register their system and ensure it is properly maintained and in good working order. Failure to register or comply with an enforcement notice can result in prosecution.`,
+  "water_jan2324___Q1b": `The percolation bed provides secondary biological and physical treatment of the clarified effluent (supernatant) from the septic tank. As effluent percolates through the unsaturated soil layers: (1) Physical filtration removes suspended solids and particulate matter through the soil matrix; (2) Biological treatment — micro-organisms naturally present in the soil biologically degrade dissolved organic matter (BOD) in the effluent; (3) Pathogen removal — pathogens are physically strained, adsorbed onto soil particles, and destroyed by soil micro-organisms as effluent moves through the unsaturated soil zone. For effective treatment, a minimum depth of 1.0m of unsaturated soil must be maintained between the base of the percolation trench and the seasonal high water table or bedrock.`,
+  "water_jan2324___Q1c": `<b>Percolation test — purpose and method</b><br><br>
+<b>Purpose:</b> To assess the soil's ability to absorb and treat effluent from a septic tank system. The result (T-value) determines whether soil permeability is within the acceptable range for a conventional subsurface percolation bed.<br><br>
+<b>Method (EPA Code of Practice):</b><br>
+1. A test hole is dug or bored to the proposed depth of the percolation trench. Minimum dimensions: 300mm × 300mm × 300mm deep.<br>
+2. The test hole is filled with water and left to soak (pre-soak) — this saturates the soil and represents realistic conditions after rain.<br>
+3. The hole is refilled with water to a set depth (typically 300mm). The time (in minutes) for the water level to fall 25mm is measured and recorded. This is repeated until consistent readings are obtained. The result is the T-value (minutes per 25mm fall).<br>
+4. The T-value is assessed: acceptable range for a standard subsurface percolation bed is T = 3 to 50 minutes. T &lt; 3 = too permeable; T &gt; 50 = too impermeable.<br><br>
+A trial pit inspection is also required to assess depth to bedrock and seasonal high water table (minimum 1.0m unsaturated zone required).`,
+  "water_jan2324___Q1d": `T-value less than 3 minutes: The soil is too permeable (e.g. coarse gravel or sand). Effluent passes through so rapidly that there is insufficient contact time for biological treatment and pathogen removal. Inadequately treated effluent containing pathogens, nitrates, and BOD can reach groundwater very quickly, potentially contaminating drinking water wells and causing public health risks such as gastroenteritis outbreaks. The risk is highest with shallow bedrock, karst limestone, or coarse-grained soils. T-value greater than 50 minutes: The soil is too impermeable (e.g. heavy clay). Effluent cannot drain through at an adequate rate. This leads to waterlogging of the percolation trench, surfacing of effluent on the ground (public health nuisance), potential backflow of sewage into the dwelling, and pooling of untreated effluent that may reach surface water by overland flow.`,
+  "water_jan2324___Q1e": `One example of an alternative secondary treatment system: A secondary packaged wastewater treatment system (e.g. an Aerobic Treatment Unit (ATU) or sequencing batch reactor (SBR)). These provide advanced biological secondary treatment within a pre-manufactured compact unit, producing higher quality effluent than a conventional septic tank. Other examples include: constructed wetlands (reed beds); mound systems (raised percolation area); polishing filters (peat/sand filters).`,
+  "water_jan2324___Q2a": `The primary treatment stage involves removal of settleable solids and associated BOD from incoming wastewater by gravity settlement. Incoming wastewater flows into large primary settlement tanks (primary clarifiers) where reduced flow velocity allows heavier particles to settle to the bottom forming primary sludge. Lighter materials (fats, oils and grease) float to the surface and are skimmed off. Primary treatment typically removes approximately 50–70% of suspended solids and approximately 30–35% of BOD. The settled primary sludge is pumped to the sludge treatment stream. The clarified wastewater (primary effluent) then passes to secondary treatment for biological treatment of the dissolved and colloidal organic matter remaining.`,
+  "water_jan2324___Q2b": `<b>Fixed film systems (trickling filters) — design, operation and disadvantages</b><br><br>
+<b>Basis of design:</b><br>
+A trickling filter consists of a circular or rectangular bed of media (traditionally crushed rock; modern systems use plastic media with high specific surface area ~100–200 m²/m³) over which settled wastewater is distributed by rotating distributor arms. The media provides a large surface area on which a biofilm of micro-organisms develops.<br><br>
+<b>Treatment process:</b><br>
+1. Settled wastewater from primary treatment is pumped to the rotating distributor at the top of the filter.<br>
+2. As wastewater trickles down through the media, organic matter is adsorbed onto and degraded by micro-organisms in the biofilm.<br>
+3. The process is aerobic — air passes naturally through the void spaces in the media by natural ventilation.<br>
+4. Periodically, parts of the biofilm detach (sloughing) as biofilm thickness exceeds oxygen penetration depth.<br>
+5. Sloughed material (humus) passes to a humus tank (secondary settlement tank) where it settles and is removed as secondary sludge.<br>
+6. Treated effluent may be recirculated to the distributor to dilute strong influent or improve treatment efficiency.<br><br>
+<b>Two disadvantages of fixed film systems:</b><br>
+1. Fly (psychoda/filter fly) infestation — the warm, moist biofilm is ideal habitat for filter flies (Psychoda spp.). Large numbers of small flies can emerge and cause nuisance to the local area.<br>
+2. Less operational flexibility than activated sludge — it is more difficult to respond to changes in influent load or quality. Performance is more affected by cold weather and the biological population cannot be rapidly adjusted.`,
+  "water_jan2324___Q2c": `Two examples of techniques used in the tertiary stage of urban wastewater treatment: (1) Chlorination — addition of chlorine (as gas, sodium hypochlorite, or calcium hypochlorite) to kill residual pathogenic bacteria and viruses before discharge. (2) UV irradiation — exposure of treated effluent to ultraviolet light, which damages the DNA of residual micro-organisms and prevents reproduction. UV is particularly effective against protozoan pathogens such as Cryptosporidium that are resistant to chlorination. Other tertiary techniques include: sand filtration; phosphorus removal (chemical precipitation using alum or ferric sulphate); ozonation; constructed wetlands.`,
+  "water_jan2324___Q3a": `The purpose of sludge thickening is to reduce the volume of sludge by increasing its dry solids content. Untreated sludge typically contains only 0.5–2% dry solids (more than 98% water). Reducing water content (thickening) before further treatment significantly reduces the volume processed in subsequent stages (digestion, dewatering, drying), reducing equipment size and operating costs and the cost of transport and disposal. One example — Gravity thickening: Sludge is pumped into a circular gravity thickener where solids settle to the bottom under gravity and are raked to a central sump from which thickened sludge is withdrawn. The clarified supernatant liquor returns to the treatment process. Gravity thickening is a simple, low-energy process effective for primary sludge, typically achieving 4–8% dry solids.`,
+  "water_jan2324___Q3b": `<b>Composting of sludge — key stages, one benefit, one disadvantage</b><br><br>
+<b>Key stages:</b><br><br>
+1. Dewatering — sludge is dewatered to ~20–30% dry solids by belt press, centrifuge or filter press.<br><br>
+2. Mixing with bulking agent — dewatered sludge is mixed with wood chips, straw, green waste or recycled compost. The bulking agent provides structural support for airflow, adjusts the carbon:nitrogen ratio (~25–30:1), and absorbs excess moisture.<br><br>
+3. Active composting (thermophilic phase) — material is formed into windrows or placed in aerated bays/vessels. Microbial activity raises temperatures to 55–70°C (thermophilic phase), which is critical for pathogen destruction (maintained for minimum time periods as required by regulations). Material must be regularly turned or aerated to maintain aerobic conditions and consistent temperatures throughout.<br><br>
+4. Curing/maturation — after the active phase, temperatures drop as easily degradable organic matter is consumed. Compost cures for several weeks to months to stabilise and develop beneficial microbial populations.<br><br>
+5. Screening and quality testing — finished compost is screened to remove bulking agent (for reuse) and oversize material. Quality parameters (pathogen levels, heavy metal concentrations, maturity) are tested to confirm requirements for use as a soil conditioner are met.<br><br>
+<b>One benefit:</b> Composting produces a valuable, stable soil conditioner that improves soil structure, provides slow-release nutrients, and increases soil organic matter — contributing to the circular economy.<br><br>
+<b>One disadvantage:</b> Composting requires significant land area, produces odours during active composting (potential nuisance to neighbours), and takes considerable time (typically 8–16 weeks minimum).`,
+  "water_jan2324___Q3c": `One piece of legislation: The European Communities (Use of Sewage Sludge in Agriculture) Regulations 1998 (S.I. No. 148 of 1998), implementing EU Sewage Sludge Directive (86/278/EEC) in Ireland. How it protects the environment: (1) Setting maximum limit values for heavy metals (zinc, copper, nickel, cadmium, lead, mercury, chromium) in agricultural soil before sludge application is permitted, and maximum limit values for heavy metal concentrations in the sludge itself — preventing accumulation of potentially toxic metals in soil. (2) Prohibiting sludge application on: land used for fruit/vegetable production; grassland where animals will graze within a specified period; frozen, waterlogged, snow-covered or flooded ground. (3) Requiring that sludge is treated (stabilised to reduce pathogens) before application. (4) Requiring that records of sludge application are maintained.`,
+  "water_jan2324___Q4a": `<b>Protecting drinking water supplies from Cryptosporidium</b><br><br>
+Cryptosporidium is a protozoan parasite that forms environmentally resistant oocysts. It is highly resistant to conventional chlorine disinfection at normal doses, making it a major challenge in drinking water treatment.<br><br>
+<b>Approaches used:</b><br><br>
+1. Optimised coagulation, flocculation and clarification (physical removal)<br>
+Coagulation and flocculation aggregate Cryptosporidium oocysts into flocs along with suspended solids. These flocs are then removed by sedimentation or dissolved air flotation (DAF). Optimising coagulant dose and mixing conditions (jar testing) maximises oocyst removal. Effective coagulation and clarification can achieve 1–3 log removal of oocysts.<br><br>
+2. Filtration (physical barrier)<br>
+Rapid gravity sand filtration or dual-media filtration physically strains oocysts from the water. Membrane filtration (ultrafiltration or nanofiltration) provides an absolute physical barrier. Additional 2–4 log removal.<br><br>
+3. UV irradiation (primary disinfection barrier)<br>
+UV light at doses of ≥40 mJ/cm² damages the DNA of Cryptosporidium oocysts, preventing them from reproducing and causing infection. UV is the most effective disinfection method against Cryptosporidium and is now the standard primary disinfection barrier in Irish drinking water treatment plants. Provides 3+ log inactivation.<br><br>
+4. Catchment management<br>
+Reducing oocyst load entering the raw water source: controlling livestock access to watercourses; managing land use to reduce agricultural runoff; monitoring raw water for oocyst counts.<br><br>
+5. Source water monitoring<br>
+Regular monitoring of raw water allows treatment plants to increase treatment intensity during high-risk periods (e.g. after heavy rainfall events).`,
+  "water_jan2324___Q4b": `<b>Drinking water treatment stages and their purpose</b><br><br>
+<b>1. Abstraction</b><br>
+Raw water is taken from a surface water source (river, lake, reservoir) or groundwater source (borehole). Surface water typically requires more extensive treatment due to susceptibility to turbidity, colour, pathogens, and algae.<br><br>
+<b>2. Screening</b><br>
+Coarse screens remove large debris (leaves, branches, litter) that could damage pumps and downstream equipment.<br><br>
+<b>3. Coagulation</b><br>
+A coagulant (aluminium sulphate/alum or ferric sulphate) is added to the raw water. The coagulant destabilises colloidal particles (clay, silt, colour-causing humic substances, micro-organisms) by neutralising their negative surface charges so they can come together.<br><br>
+<b>4. Flocculation</b><br>
+Destabilised particles are gently mixed (slow stirring) allowing them to aggregate into larger, visible flocs (clumps of particles). Polymer flocculants may be added to strengthen floc structure.<br><br>
+<b>5. Clarification (settlement or DAF)</b><br>
+Flocs are removed by: (a) Gravity sedimentation — flocs settle to the bottom of settlement tanks, producing a sludge that is removed; or (b) Dissolved Air Flotation (DAF) — air bubbles attach to flocs and float them to the surface where they are skimmed off. Clarification removes turbidity, colour, suspended solids, and significantly reduces micro-organisms including Cryptosporidium oocysts.<br><br>
+<b>6. Filtration</b><br>
+Water passes through rapid gravity sand filters or dual-media filters to remove residual floc, turbidity, and micro-organisms. Membrane filtration provides an absolute barrier against micro-organisms.<br><br>
+<b>7. Disinfection</b><br>
+Kills residual pathogenic micro-organisms. Common methods: (a) Chlorination — most widely used; provides a residual disinfectant in the distribution network; not effective against Cryptosporidium; (b) UV irradiation — effective against Cryptosporidium; no residual; (c) Ozonation — effective against pathogens; no residual. Chloramination may be used for residual in large distribution networks.<br><br>
+<b>8. pH correction</b><br>
+pH adjusted (typically by adding lime or carbon dioxide) to reduce corrosivity to pipes and ensure stability of disinfectant residual.<br><br>
+<b>9. Fluoridation</b><br>
+In Ireland, fluoride is added to achieve 0.6 mg/L for dental health purposes.<br><br>
+<b>10. Distribution</b><br>
+Treated water is pumped to service reservoirs and distributed through the pipe network.`,
+  "water_jan2425___Q1a": `A malfunctioning septic tank system can pose a risk to human health through contamination of groundwater and/or surface water with pathogens — disease-causing micro-organisms. When a septic tank system fails (e.g. due to a blocked percolation bed from failure to desludge, high water table, or soil clogging), inadequately treated wastewater containing pathogens can reach groundwater (private wells) or surface water. People who consume contaminated well water or come into contact with contaminated water are at risk of waterborne illness. Example: Cryptosporidiosis — caused by the protozoan parasite Cryptosporidium. Infection causes profuse watery diarrhoea, stomach cramps, nausea and vomiting, typically lasting 1–2 weeks. It can be life-threatening in immunocompromised individuals. Poorly maintained septic tank systems in agricultural areas are a known source of Cryptosporidium contamination of catchments used for drinking water abstraction.`,
+  "water_jan2425___Q1b": `The National Inspection Plan (2022–2026) sets out the national programme of inspections of domestic septic tank systems in Ireland. Its main purposes are: to protect human health and the environment (particularly drinking water sources and water bodies) from the adverse effects of poorly maintained or malfunctioning domestic wastewater treatment systems; to implement a risk-based approach to inspections — prioritising areas of highest environmental risk such as near drinking water well catchments, groundwater protection zones, and areas with karst limestone geology; and to ensure compliance with the Water Services (Amendment) Act 2012 and Ireland's obligations under EU water quality directives.`,
+  "water_jan2425___Q1c": `<b>Percolation test — purpose and method</b><br><br>
+<b>Purpose:</b> To assess the soil's ability to absorb and treat effluent from a septic tank system. The result (T-value) determines whether soil permeability is within the acceptable range for a conventional subsurface percolation bed.<br><br>
+<b>Method (EPA Code of Practice):</b><br>
+1. A test hole is dug or bored to the proposed depth of the percolation trench. Minimum dimensions: 300mm × 300mm × 300mm deep.<br>
+2. The test hole is filled with water and left to soak (pre-soak) — this saturates the soil and represents realistic conditions after rain.<br>
+3. The hole is refilled with water to a set depth (typically 300mm). The time (in minutes) for the water level to fall 25mm is measured and recorded. This is repeated until consistent readings are obtained. The result is the T-value (minutes per 25mm fall).<br>
+4. The T-value is assessed: acceptable range for a standard subsurface percolation bed is T = 3 to 50 minutes. T &lt; 3 = too permeable; T &gt; 50 = too impermeable.<br><br>
+A trial pit inspection is also required to assess depth to bedrock and seasonal high water table (minimum 1.0m unsaturated zone required).`,
+  "water_jan2425___Q1d": `Site characteristics increasing groundwater vulnerability to contamination from a septic tank: (1) Shallow depth to bedrock — reduces unsaturated subsoil depth available for filtration and treatment. Minimum 1.0m unsaturated subsoil required. (2) Karst or fissured/fractured bedrock — allows rapid preferential flow through open fissures, joints and caves directly to groundwater with no filtration. Large areas of west and midlands Ireland are underlain by karstified limestone. (3) Coarse-grained, highly permeable soils (gravels, sands) — effluent passes rapidly with insufficient contact time for treatment or pathogen removal. (4) High seasonal water table — reduces the unsaturated zone below the percolation trench; saturated conditions greatly reduce treatment effectiveness. (5) Proximity to surface water or groundwater abstraction points — reduces travel time for contaminated groundwater to reach a receptor, limiting natural attenuation.`,
+  "water_jan2425___Q2a": `<b>Activated sludge process — secondary treatment</b><br><br>
+The activated sludge process uses a mixed community of micro-organisms (bacteria, protozoa) in suspension to biologically degrade dissolved and colloidal organic matter (BOD) from settled wastewater (primary effluent).<br><br>
+<b>Process description:</b><br>
+1. Primary effluent enters the aeration basin (reaction tank) containing dense suspension of micro-organisms — the activated sludge — at typically 2,000–5,000 mg/L MLSS (mixed liquor suspended solids).<br>
+2. Oxygen is supplied by surface aerators or fine-bubble diffusers. Aerobic conditions allow bacteria to metabolise and oxidise organic matter, producing CO₂, water and new bacterial biomass. Aeration also keeps sludge in suspension.<br>
+3. Mixed liquor flows to secondary settlement tank (secondary clarifier) where activated sludge flocs settle under gravity, producing a clear treated effluent above.<br>
+4. Settled sludge is divided into: (a) Return activated sludge (RAS) — pumped back to aeration basin to maintain microbial population; (b) Waste activated sludge (WAS) — excess sludge removed to prevent MLSS building up too high. WAS goes to the sludge treatment stream.<br>
+5. Clarified effluent passes to tertiary treatment or is discharged.`,
+  "water_jan2425___Q2b": `Biological nitrogen removal — two-step nitrification/denitrification process: Nitrogen in wastewater is primarily as ammonium (NH₄⁺), which must be removed to prevent eutrophication and nitrate contamination. Step 1 — Nitrification (aerobic zone): Ammonium is oxidised to nitrate (NO₃⁻) in two sub-steps: (a) NH₄⁺ oxidised to nitrite (NO₂⁻) by Nitrosomonas bacteria; (b) NO₂⁻ then oxidised to nitrate (NO₃⁻) by Nitrobacter bacteria. Requires abundant dissolved oxygen (aerobic conditions) and sufficient alkalinity. Nitrifying bacteria are slow-growing — a long sludge retention time (SRT) is needed. Step 2 — Denitrification (anoxic zone): Nitrate is converted to nitrogen gas (N₂) by heterotrophic denitrifying bacteria in the absence of dissolved oxygen (anoxic conditions). The bacteria use nitrate as their electron acceptor instead of oxygen and require an organic carbon source (the incoming wastewater BOD in pre-denitrification systems). Nitrogen gas is released to the atmosphere, permanently removing nitrogen from the wastewater. An anoxic zone is created within or before the aeration basin by reducing or eliminating aeration in a section of the tank.`,
+  "water_jan2425___Q2c": `UV irradiation in tertiary treatment: Ultraviolet (UV) light is applied to treated wastewater effluent as it passes through a UV disinfection unit (channel containing submerged UV lamps). UV light at ~254 nm wavelength is absorbed by the DNA and RNA of micro-organisms, causing photochemical damage (thymine dimers in DNA) that prevents micro-organisms from replicating — they cannot reproduce and therefore cannot cause infection, even though they are not physically destroyed. One benefit of UV compared to other methods: UV does not produce disinfection by-products (DBPs). Chlorination produces potentially carcinogenic disinfection by-products such as trihalomethanes (THMs) and haloacetic acids when chlorine reacts with organic matter in the effluent. UV produces no such chemical residuals. UV is also highly effective against Cryptosporidium oocysts, which are resistant to chlorination — a particular advantage in the tertiary treatment of wastewater.`,
+  "water_jan2425___Q3a": `Two key reasons for the treatment of sludge from urban wastewater treatment plants: (1) Stabilisation and pathogen reduction — raw sludge contains large quantities of pathogenic micro-organisms, unpleasant odours, and putrescible organic matter. Treatment (digestion, composting, alkaline stabilisation) stabilises the sludge by reducing volatile solids, eliminating pathogens to required standards, and eliminating odour problems. This is essential before sludge can be safely applied to agricultural land or disposed of. (2) Volume and mass reduction — treatment processes such as thickening, digestion, dewatering, and drying significantly reduce the volume and mass of sludge that must ultimately be disposed of. Digestion can reduce volatile solids by 50–60%; dewatering reduces water content from ~97% to ~75–80% dry solids. Reduced volume lowers cost of transport and final disposal.`,
+  "water_jan2425___Q3b": `<b>Anaerobic digestion — key stages and outputs</b><br><br>
+Anaerobic digestion (AD) is the biological breakdown of organic matter (sludge) in the absence of oxygen by a community of micro-organisms. Carried out in sealed, heated digester vessels (typically mesophilic: 35°C, or thermophilic: 55°C).<br><br>
+<b>Four-stage process:</b><br><br>
+1. Hydrolysis — complex organic polymers (proteins, fats, carbohydrates) broken down into simpler soluble monomers (amino acids, fatty acids, sugars) by hydrolytic bacteria. Often the rate-limiting step.<br><br>
+2. Acidogenesis (fermentation) — soluble monomers converted by fermentative bacteria into volatile fatty acids (VFAs — acetic, propionic, butyric acids), alcohols, hydrogen gas (H₂), and carbon dioxide (CO₂).<br><br>
+3. Acetogenesis — acetogenic bacteria convert longer-chain VFAs and alcohols into acetic acid (acetate), hydrogen (H₂), and CO₂. These are the direct substrates for methane production.<br><br>
+4. Methanogenesis — methanogenic archaea (strict anaerobes) convert acetate and H₂/CO₂ into methane (CH₄) and CO₂. This is the final stage producing the biogas.<br><br>
+<b>Key outputs:</b><br>
+Biogas — approximately 60–70% methane (CH₄) and 30–40% CO₂. Captured and used to generate heat and electricity via combined heat and power (CHP) units. Surplus electricity can be exported to the grid.<br>
+Digestate — the stabilised residue. Has significantly reduced volatile solids content (40–60% reduction), reduced pathogens, and reduced odour compared to raw sludge. Further processed (dewatered, dried) and may be applied to agricultural land as biosolids if meeting quality standards.`,
+  "water_jan2425___Q3c": `Thermal drying is a sludge treatment technique in which heat is applied to dewatered sludge to evaporate water and produce a dry, granular product with very high dry solids content (typically >90% dry solids — compared to ~20–25% dry solids after mechanical dewatering alone). The process involves heating sludge in a dryer (drum dryer, belt dryer, or disc dryer) to temperatures sufficient to evaporate the water. Two pros: (1) Significant reduction in volume and mass — reduces sludge weight to be transported and disposed of by 70–80%, greatly reducing transport and final disposal costs. (2) Stable, hygienic product — the high temperatures destroy all pathogens producing a Class A biosolid equivalent. The dried granular product is stable, easy to handle, can be stored and transported long distances, and may be used as a high-grade fertiliser or alternative fuel. Two cons: (1) Very high energy demand — thermal drying is extremely energy-intensive, as large amounts of heat are required to evaporate water, making it costly to operate unless waste heat or biogas is available. (2) High capital cost — thermal drying equipment is expensive to purchase and install.`,
+  "water_jan2425___Q3d": `Four mitigation measures to minimise risk from application of biosolids to agricultural land: (1) Ensure adequate pathogen treatment before application — biosolids must be treated to Class A or Class B biosolid standards (meeting pathogen reduction standards set in regulations). (2) Respect agronomic application rates — apply only at rates matching the nutrient requirements of the crop being grown, based on soil testing and nutrient management planning. Avoid over-application which leads to nitrate leaching and phosphorus runoff. (3) Observe exclusion zones and closed periods — maintain minimum distances from watercourses (10m), drinking water wells (200m), field drains, and residential properties. Do not apply on sloped land where runoff is likely. Observe closed periods for application (prohibited October–January under Nitrates Action Programme). (4) Monitor soil quality and maintain records — regular soil testing for heavy metal accumulation, soil pH, phosphorus status. Maintain detailed records of all applications (dates, locations, quantities, sludge quality test results) as required by law.`,
+  "water_jan2425___Q4a": `<b>Drinking water treatment stages and their purpose</b><br><br>
+<b>1. Abstraction</b><br>
+Raw water is taken from a surface water source (river, lake, reservoir) or groundwater source (borehole). Surface water typically requires more extensive treatment due to susceptibility to turbidity, colour, pathogens, and algae.<br><br>
+<b>2. Screening</b><br>
+Coarse screens remove large debris (leaves, branches, litter) that could damage pumps and downstream equipment.<br><br>
+<b>3. Coagulation</b><br>
+A coagulant (aluminium sulphate/alum or ferric sulphate) is added to the raw water. The coagulant destabilises colloidal particles (clay, silt, colour-causing humic substances, micro-organisms) by neutralising their negative surface charges so they can come together.<br><br>
+<b>4. Flocculation</b><br>
+Destabilised particles are gently mixed (slow stirring) allowing them to aggregate into larger, visible flocs (clumps of particles). Polymer flocculants may be added to strengthen floc structure.<br><br>
+<b>5. Clarification (settlement or DAF)</b><br>
+Flocs are removed by: (a) Gravity sedimentation — flocs settle to the bottom of settlement tanks, producing a sludge that is removed; or (b) Dissolved Air Flotation (DAF) — air bubbles attach to flocs and float them to the surface where they are skimmed off. Clarification removes turbidity, colour, suspended solids, and significantly reduces micro-organisms including Cryptosporidium oocysts.<br><br>
+<b>6. Filtration</b><br>
+Water passes through rapid gravity sand filters or dual-media filters to remove residual floc, turbidity, and micro-organisms. Membrane filtration provides an absolute barrier against micro-organisms.<br><br>
+<b>7. Disinfection</b><br>
+Kills residual pathogenic micro-organisms. Common methods: (a) Chlorination — most widely used; provides a residual disinfectant in the distribution network; not effective against Cryptosporidium; (b) UV irradiation — effective against Cryptosporidium; no residual; (c) Ozonation — effective against pathogens; no residual. Chloramination may be used for residual in large distribution networks.<br><br>
+<b>8. pH correction</b><br>
+pH adjusted (typically by adding lime or carbon dioxide) to reduce corrosivity to pipes and ensure stability of disinfectant residual.<br><br>
+<b>9. Fluoridation</b><br>
+In Ireland, fluoride is added to achieve 0.6 mg/L for dental health purposes.<br><br>
+<b>10. Distribution</b><br>
+Treated water is pumped to service reservoirs and distributed through the pipe network.`,
+  "water_jan2425___Q4b": `Jar testing is a laboratory-scale simulation of the coagulation and flocculation process, used to determine the optimum coagulant type, dose, and mixing conditions for the current raw water quality entering the treatment plant. Purpose: Raw water quality varies continuously — turbidity, colour, pH, temperature, organic matter content and algal concentrations all change with weather, season, and catchment activities. The optimal coagulant dose and mixing conditions change accordingly. Using too little coagulant results in poor floc formation and inadequate removal of turbidity and micro-organisms. Using too much wastes chemicals and can result in carry-over of residual aluminium or iron into treated water. Method: Multiple small jars (typically 1 litre) are filled with raw water and dosed with different coagulant concentrations. The jars are subjected to rapid mixing (to disperse coagulant) followed by slow mixing (to allow floc formation), then allowed to settle. Supernatant from each jar is analysed for turbidity, colour, and residual coagulant. The dose producing the lowest turbidity, good floc formation, and minimal residual is selected as optimal.`,
+};
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', function() {
